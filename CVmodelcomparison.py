@@ -1,14 +1,28 @@
-'''
-Use time series cross validation to compare models 1, 2, and 3.
-1 = K2-18b + c + GP trained on K2 photometry
-2 = K2-18b + c + GP trained on BIS
-3 = K2-18b + c only
-4 = K2-18b + c + untrained GP
-'''
 from imports import *
 from rvmodel import get_rv1
-from read_K218 import readdata_K218
 from scipy.optimize import minimize
+
+
+def lnlike(rvs, model, theta=(np.sqrt(3),50.,.5,20.)):
+    
+
+    if x.shape[0] != xp.shape[0] and x.shape[0] != 1:
+            raise ValueError('`xp` must have the same number of entries as' + \
+                             ' `x` or have only one entry for prediction.')
+        Ktmp = np.zeros((x.shape[0], xp.shape[0]))
+        for i in xrange(self.Nparams):
+            if x.shape[0] == xp.shape[0]:
+                xmx = abs(np.tile(x[:,i], (x.shape[0],1)) - \
+                          np.tile(xp[:,i], (xp.shape[0],1)).T)
+            else:
+                xmx = abs(x[:,i].reshape(x.shape[0],1) - xp[:,i])
+            Ktmp += np.exp(self.lnhyperparams[i]) * xmx**2
+        self.Z = np.exp(self.lnhyperparams[self.Nparams]) * np.exp(-.5 * Ktmp)
+        K = np.zeros_like(self.Z) + self.Z
+        if x.shape[0] == xp.shape[0]:
+            K += np.exp(self.lnhyperparams[self.Nparams+1]) * np.eye(x.shape[0])
+        return K
+    
 
 
 #############################################################################
