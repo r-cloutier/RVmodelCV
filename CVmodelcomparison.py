@@ -71,13 +71,13 @@ def preferred_model(models, lls, ells):
 	return models[lls == lls.max()]
 
 
-def compare_4models_CV(num):
+def compare_4models_CV(num, modelinit=0, modelfin=3):
     # Get data and theta
     t, rv, erv = get_dataset(num)
 
     # Run CV on each planet model
     times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
-    for i in range(1,4):
+    for i in range(modelinit, modelfin+1):
 	print 'CV on %i planet model...'%i
    	theta = get_initializations(num, i)
 	t0 = time.time()
@@ -87,3 +87,6 @@ def compare_4models_CV(num):
   	print 'Took %.3e seconds\n'%times[i]
    
     return times, successfrac, lls, ells
+
+if __name__ == '__main__':
+    times, successfrac, lls, ells = compare_4models_CV(1, modelinit=1)
