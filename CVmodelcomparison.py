@@ -77,7 +77,7 @@ def compare_4models_CV(num):
 
     # Run CV on each planet model
     times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
-    for i in range(1,4):
+    for i in range(4):
 	print 'CV on %i planet model...'%i
    	theta = get_initializations(num, i)
 	t0 = time.time()
