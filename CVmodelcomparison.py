@@ -1,7 +1,8 @@
-firom imports import *
+from imports import *
 from scipy.optimize import minimize
 from lnlike import lnlike
 from visualize_data import *
+from savepickle import saveRVmodelCV
 
 
 def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
@@ -90,3 +91,4 @@ def compare_4models_CV(num, modelinit=0, modelfin=3):
 
 if __name__ == '__main__':
     times, successfrac, lls, ells = compare_4models_CV(1, modelinit=1)
+    self = saveRVmodelCV(times, successfrac, lls, ells, 'test_1')
