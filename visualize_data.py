@@ -8,6 +8,17 @@ def get_dataset(num):
     t, rv, erv = np.loadtxt('Inputs/data/rvs_%.4d.txt'%num).T
     return t, rv, erv
 
+
+def get_initializations(num, nplanets):
+    assert 1 <= num <= 6
+    assert 0 <= nplanets <= 3
+    f = open('initializations/initializations_%.4d.dat'%num,'r')
+    g = f.readlines()
+    f.close()
+    theta = [float(i) for i in g[nplanets].split(',')]
+    return np.array(theta)
+
+
 def get_h_k(e, omega):
     return np.sqrt(e)*np.cos(omega), np.sqrt(e)*np.sin(omega)
 

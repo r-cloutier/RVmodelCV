@@ -6,12 +6,14 @@ def lnlike(theta, t, rvs, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     # check
     N = t.size
     assert rvs.size == N
-    assert model.size == N
+    assert erv.size == N
 
     # define fixed covariance hyperparameters
     alpha, le, lp, tau = GPtheta
 
     # Compute model
+    theta = np.ascontiguousarray(theta)
+    sigmaJ = theta[0]
     model = compute_rvmodel(theta, t)
     
     # Compute elements of the covariance matrix

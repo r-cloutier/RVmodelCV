@@ -1,7 +1,7 @@
 from imports import *
-from rvmodel import get_rv1
 from scipy.optimize import minimize
 from lnlike import lnlike
+from visualize_data import *
 
 
 def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
@@ -19,7 +19,7 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
 
     # Define the sizes of the training sets
     nforecasts = 1    # number of steps from last in training set
-    T = np.arange(minN_2_fit, bjd.size-nforecasts)
+    T = np.arange(minN_2_fit, t.size-nforecasts)
     
     # Loop over each training set and each number of forecast steps
     lnlikes, successes = np.zeros(0), np.zeros(0, dtype=bool)
@@ -28,18 +28,18 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
         for j in range(T.size):
 
             # Split: create training set and a testing point
-            ind = int(T[j])  #t==ind
+            ind = int(T[j])
             ttrain, rvtrain, ervtrain = t[:ind], rv[:ind], erv[:ind]
-            ttest, rvtest, ervtest  = t[ind+forecaststeps[i]], \
-                                      rv[ind+forecaststeps[i]], \
-                                      erv[ind+forecaststeps[i]]
-                
+            ttest, rvtest, ervtest  = np.ascontiguousarray(t[ind+forecaststeps[i]]), \
+                                      np.ascontiguousarray(rv[ind+forecaststeps[i]]), \
+                                      np.ascontiguousarray(erv[ind+forecaststeps[i]])
+
             # Optimize keplerian parameters
             nll = lambda *args: -lnlike(*args)
             args = (ttrain, rvtrain, ervtrain)
             result = minimize(nll, theta, args=args)
             thetaopt = result.x if result.success else theta
-            successes = np.append(successes, results.success)
+            successes = np.append(successes, result.success)
 
             # Compute lnlikelihood for this training set
             lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest,
@@ -69,3 +69,21 @@ def preferred_model(models, lls, ells):
     # If inconistent then return which model is preferred
     else:
 	return models[lls == lls.max()]
+
+
+def compare_4models_CV(num):
+    # Get data and theta
+    t, rv, erv = get_dataset(num)
+
+    # Run CV on each planet model
+    times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
+    for i in range(1,4):
+	print 'CV on %i planet model...'%i
+   	theta = get_initializations(num, i)
+	t0 = time.time()
+	lnlikes, success, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv)
+	successfrac[i] = success.sum() / float(success.size)
+        times[i] = time.time()-t0
+  	print 'Took %.3e seconds\n'%times[i]
+   
+    return times, successfrac, lls, ells
