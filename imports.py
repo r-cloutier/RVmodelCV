@@ -12,8 +12,8 @@ from PyAstronomy.pyasl import foldAt
 import glob
 import time
 import rvs
-import BIC
-import massradius as mr
+#import BIC
+#import massradius as mr
 import compute_hz as chz
 import rebound
 from scipy.stats import ks_2samp
