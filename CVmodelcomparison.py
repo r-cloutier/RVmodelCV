@@ -1,4 +1,4 @@
-from imports import *
+firom imports import *
 from scipy.optimize import minimize
 from lnlike import lnlike
 from visualize_data import *
