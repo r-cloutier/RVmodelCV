@@ -10,3 +10,9 @@ class saveRVmodelCV:
         f = open('results_%s'%outsuffix, 'wb')
         pickle.dump(self, f)
         f.close()
+
+def loadpickle(fname):
+    f = open(fname, 'rb')
+    self = pickle.load(f)
+    f.close()
+    return self
