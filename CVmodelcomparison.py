@@ -87,7 +87,7 @@ def compare_4models_CV(num, modelinit=0, modelfin=3):
 
     # Run CV on each planet model
     nmodels = modelfin+1-modelinit
-    times, successfrac, lls, ells = np.zeros(nmodels), np.zeros(nmodels), np.zeros(nmodels), np.zeros(nmodels)
+    times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
     for i in range(modelinit, modelfin+1):
 	print 'CV on %i planet model...'%i
    	theta = get_initializations(num, i)
@@ -98,6 +98,7 @@ def compare_4models_CV(num, modelinit=0, modelfin=3):
   	print 'Took %.3e seconds\n'%times[i]
    
     return times, successfrac, lnlikes, successes, lls, ells
+
 
 if __name__ == '__main__':
     nplanets = int(sys.argv[1])
