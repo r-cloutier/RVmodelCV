@@ -86,19 +86,20 @@ def compare_4models_CV(num, modelinit=0, modelfin=3):
     t, rv, erv = get_dataset(num)
 
     # Run CV on each planet model
-    times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
+    nmodels = modelfin+1-modelinit
+    times, successfrac, lls, ells = np.zeros(nmodels), np.zeros(nmodels), np.zeros(nmodels), np.zeros(nmodels)
     for i in range(modelinit, modelfin+1):
 	print 'CV on %i planet model...'%i
    	theta = get_initializations(num, i)
 	t0 = time.time()
-	lnlikes, success, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv)
-	successfrac[i] = success.sum() / float(success.size)
+	lnlikes, successes, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv)
+	successfrac[i] = successes.sum() / float(successes.size)
         times[i] = time.time()-t0
   	print 'Took %.3e seconds\n'%times[i]
    
-    return times, successfrac, lls, ells
+    return times, successfrac, lnlikes, successes, lls, ells
 
 if __name__ == '__main__':
     nplanets = int(sys.argv[1])
-    times, successfrac, lls, ells = compare_4models_CV(1, modelinit=nplanets, modelfin=nplanets)
-    self = saveRVmodelCV(times, successfrac, lls, ells, 'test_wpriors%i'%nplanets)
+    times, successfrac, lnlikes, successes, lls, ells = compare_4models_CV(1, modelinit=nplanets, modelfin=nplanets)
+    self = saveRVmodelCV(times, successfrac, lnlikes, successes, lls, ells, 'test_wpriors%i'%nplanets)

@@ -1,9 +1,11 @@
 from imports import *
 
 class saveRVmodelCV:
-    def __init__(self, times, successfrac, lls, ells, outsuffix):
+    def __init__(self, times, successfrac, lnlikes, successes, lls, ells, outsuffix):
         self.times = times
         self.successfrac = successfrac
+	self.lnlikes = lnlikes
+	self.successes = successes
         self.lls, self.ells = lls, ells
 
         # pickle
