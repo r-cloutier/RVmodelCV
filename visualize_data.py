@@ -28,7 +28,7 @@ def compute_rvmodel(theta, t):
     model = np.zeros(N)
     if theta.size == 2:
 	sigmaJ,C = theta
-        model = np.repeat(C, N)
+        model = np.zeros(N)
 
     elif theta.size == 7:
         sigmaJ,C,P1,T01,K1,e1,omega1 = theta

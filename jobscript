@@ -6,4 +6,4 @@
 #PBS -N RVmodelCV
 # EVERYTHING ABOVE THIS COMMENT IS NECESSARY, SHOULD ONLY CHANGE nodes,ppn,walltime and my_job_name VALUES
 cd $PBS_O_WORKDIR
-python CVmodelcomparison.py
+python CVmodelcomparison.py 0
