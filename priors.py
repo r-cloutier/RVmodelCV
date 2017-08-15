@@ -8,13 +8,13 @@ def K_prior(K, Kmax=999, K0=1):
     Kmax, K0 = float(Kmax), float(K0)
     return 1. / (K0*(1+K/K0) * np.log(1+Kmax/K0))
 
-def e_prior(e):
+def e_prior():
     return 1.
 
-def omega_prior(omega):
+def omega_prior():
     return 1. / (2*np.pi)
 
-def M_prior(M):  # mean anomaly
+def M_prior():  # mean anomaly
     '''M = n*(t-T0) = 2*pi*(t-T0)/P'''
     return 1. / (2*np.pi)
 
