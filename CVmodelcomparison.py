@@ -3,6 +3,7 @@ from scipy.optimize import minimize
 from lnlike import lnlike
 from visualize_data import *
 from savepickle import saveRVmodelCV
+from priors import *
 
 
 def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
