@@ -100,4 +100,4 @@ def compare_4models_CV(num, modelinit=0, modelfin=3):
 if __name__ == '__main__':
     nplanets = int(sys.argv[1])
     times, successfrac, lls, ells = compare_4models_CV(1, modelinit=nplanets, modelfin=nplanets)
-    self = saveRVmodelCV(times, successfrac, lls, ells, 'test_1')
+    self = saveRVmodelCV(times, successfrac, lls, ells, 'test_wpriors%i'%nplanets)
