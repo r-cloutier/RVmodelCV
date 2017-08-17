@@ -9,7 +9,7 @@ class saveRVmodelCV:
         self.lls, self.ells = lls, ells
 
         # pickle
-        f = open('results_%s'%outsuffix, 'wb')
+        f = open('%s'%outsuffix, 'wb')
         pickle.dump(self, f)
         f.close()
 

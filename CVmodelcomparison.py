@@ -25,6 +25,7 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
     
     # Loop over each training set and each number of forecast steps
     lnlikes, successes = np.zeros(0), np.zeros(0, dtype=bool)
+    ind, thetaops = 0, np.zeros((0,len(theta)))
     forecaststeps = np.arange(nforecasts)
     for i in range(nforecasts):
         for j in range(T.size):
@@ -45,15 +46,18 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
             #thetaopt = theta
             #successes = np.append(successes, True)
 
+	    # Save parameter values
+	    thetaops = np.insert(thetaops, ind, thetaop, axis=0)
+
             # Compute priors on model parameters
-            lnpri = np.log(compute_theta_prior(thetaopt))
+            #lnpri = np.log(compute_theta_prior(thetaopt))
 
             # Compute prior on the number of planets
-            lnmodelpri = np.log(compute_planet_prior(thetaopt))
+            #lnmodelpri = np.log(compute_planet_prior(thetaopt))
 
             # Compute lnlikelihood for this training set
-            lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest, rvtest, ervtest) + \
-                                         lnpri + lnmodelpri)
+            lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest, rvtest, ervtest)) #+ \
+                                         #lnpri + lnmodelpri)
 
     # Return mean lnlikelihood and std of the mean
     mad_median = MAD(lnlikes) / np.sqrt(lnlikes.size)
@@ -103,4 +107,4 @@ def compare_4models_CV(num, modelinit=0, modelfin=3):
 if __name__ == '__main__':
     nplanets = int(sys.argv[1])
     times, successfrac, lnlikes, successes, lls, ells = compare_4models_CV(1, modelinit=nplanets, modelfin=nplanets)
-    self = saveRVmodelCV(times, successfrac, lnlikes, successes, lls, ells, 'test_wpriors%i'%nplanets)
+    self = saveRVmodelCV(times, successfrac, lnlikes, successes, lls, ells, 'results/test_wpriors%i'%nplanets)
