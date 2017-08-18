@@ -23,6 +23,7 @@ from matplotlib.colors import LogNorm
 from astropy.io import ascii
 from astropy.stats import LombScargle
 from uncertainties import unumpy
+from ad import gh, linalg
 ##import RVplotting.py as rvplt
 ##import periodogram.py as lsp
-##import rvmodel as rvm
+import rvmodel as rvm

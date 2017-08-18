@@ -1,5 +1,6 @@
 import numpy as np
 import pylab as plt
+from ad import admath
 #from PyAstronomy.pyasl import foldAt
 
 
@@ -15,21 +16,22 @@ def day2sec(t):
 def semi_amp(P,Ms,Mp,inc,e):
     G=6.67e-11
     P=day2sec(P)
-    return (2*np.pi*G/(P*Msun2kg(Ms)**2))**(1./3)*Mjup2kg(Mearth2Mjup(Mp))*np.sin(inc)/np.sqrt(1-e*e) # m/s
+    return (2*np.pi*G/(P*Msun2kg(Ms)**2))**(1./3)*Mjup2kg(Mearth2Mjup(Mp))*admath.sin(inc)/admath.sqrt(1-e*e) # m/s
 
 def ecc_anom(t,omega,ecc):
     '''t (BJD), omega (rad)'''
     omega=np.deg2rad(450.)-omega # translate by 1.25 circles; get rid of negative values)
-    e0=np.arctan2(np.sqrt(1-ecc*ecc)*np.sin(omega),ecc+np.cos(omega))
-    fma0=e0-ecc*np.sin(e0)
+    ##e0=np.arctan2(np.sqrt(1-ecc*ecc)*np.sin(omega),ecc+np.cos(omega))
+    e0 = admath.atan2(np.sqrt(1-ecc*ecc)*np.sin(omega),ecc+np.cos(omega))
+    fma0=e0-ecc*admath.sin(e0)
     E=np.zeros(len(t))
     for i in range(len(t)):
         phase=2*np.pi*t[i]
         fma=phase+fma0
-        ee=fma+ecc*np.sin(fma)
+        ee=fma+ecc*admath.sin(fma)
         for j in range(15):
-            denom=1.-ecc*np.cos(ee)
-            disc=fma - ee + ecc*np.sin(ee)
+            denom=1.-ecc*admath.cos(ee)
+            disc=fma - ee + ecc*admath.sin(ee)
             ee+=disc/denom
             if (np.abs(disc) < 2e-15):
                 break
@@ -49,11 +51,12 @@ def RV(t,theta):
     # Compute phase
     t=(t-T0)/P
     # Sanity check (redundant)
-    if np.any(np.isinf(t)):
+    if np.any(admath.isinf(t)):
 	return np.zeros(t.size)
     # Compute eccentricity and argument of periapsis
     ecc=h*h+k*k
-    omega=np.arctan2(k,h)
+    ##omega=np.arctan2(k,h)
+    omega = admath.atan2(k,h)
     # Solve Kepler's equation
     E=ecc_anom(t,omega,ecc)
     # Compute true anomaly

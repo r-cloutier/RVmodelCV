@@ -25,7 +25,7 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
     
     # Loop over each training set and each number of forecast steps
     lnlikes, successes = np.zeros(0), np.zeros(0, dtype=bool)
-    ind, thetaops = 0, np.zeros((0,len(theta)))
+    k, thetaops = 0, np.zeros((0,len(theta)))
     forecaststeps = np.arange(nforecasts)
     for i in range(nforecasts):
         for j in range(T.size):
@@ -47,7 +47,7 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
             #successes = np.append(successes, True)
 
 	    # Save parameter values
-	    thetaops = np.insert(thetaops, ind, thetaop, axis=0)
+	    thetaops = np.insert(thetaops, k, thetaopt, axis=0)
 
             # Compute priors on model parameters
             #lnpri = np.log(compute_theta_prior(thetaopt))
@@ -61,7 +61,7 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
 
     # Return mean lnlikelihood and std of the mean
     mad_median = MAD(lnlikes) / np.sqrt(lnlikes.size)
-    return lnlikes, successes, np.median(lnlikes), mad_median
+    return lnlikes, successes, thetaops, np.median(lnlikes), mad_median
 
 
 def MAD(arr):
@@ -85,26 +85,25 @@ def preferred_model(models, lls, ells):
 	return models[lls == lls.max()]
 
 
-def compare_4models_CV(num, modelinit=0, modelfin=3):
+def run_1model_CV(datanum, modelnum):
     # Get data and theta
-    t, rv, erv = get_dataset(num)
+    t, rv, erv = get_dataset(datanum)
 
     # Run CV on each planet model
-    nmodels = modelfin+1-modelinit
     times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
-    for i in range(modelinit, modelfin+1):
-	print 'CV on %i planet model...'%i
-   	theta = get_initializations(num, i)
-	t0 = time.time()
-	lnlikes, successes, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv)
-	successfrac[i] = successes.sum() / float(successes.size)
-        times[i] = time.time()-t0
-  	print 'Took %.3e seconds\n'%times[i]
+    i = modelnum
+    print 'CV on %i planet model...'%i
+    theta = get_initializations(datanum, i)
+    t0 = time.time()
+    lnlikes, successes, thetaops, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv)
+    successfrac[i] = successes.sum() / float(successes.size)
+    times[i] = time.time()-t0
+    print 'Took %.3e seconds\n'%times[i]
    
-    return times, successfrac, lnlikes, successes, lls, ells
+    return times, successfrac, lnlikes, successes, thetaops, lls, ells
 
 
 if __name__ == '__main__':
     nplanets = int(sys.argv[1])
-    times, successfrac, lnlikes, successes, lls, ells = compare_4models_CV(1, modelinit=nplanets, modelfin=nplanets)
+    times, successfrac, lnlikes, successes, thetas, lls, ells = run_1model_CV(1, nplanets)
     self = saveRVmodelCV(times, successfrac, lnlikes, successes, lls, ells, 'results/test_wpriors%i'%nplanets)
