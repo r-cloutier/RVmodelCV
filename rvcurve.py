@@ -32,7 +32,7 @@ def ecc_anom(t,omega,ecc):
         for j in range(15):
             denom=1.-ecc*admath.cos(ee)
             disc=fma - ee + ecc*admath.sin(ee)
-            ee+=disc/denom
+            ee=ee+disc/denom
             if (np.abs(disc) < 2e-15):
                 break
         E[i]=ee

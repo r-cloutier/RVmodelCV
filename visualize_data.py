@@ -33,23 +33,23 @@ def compute_rvmodel(theta, t):
     elif theta.size == 7:
         sigmaJ,C,P1,T01,K1,e1,omega1 = theta
         h1, k1 = get_h_k(e1, omega1)
-        model += get_rv2((P1,T01,K1,h1,k1), t)
+        model = model + get_rv2((P1,T01,K1,h1,k1), t)
 
     elif theta.size == 12:
         sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta
         h1, k1 = get_h_k(e1, omega1)
         h2, k2 = get_h_k(e2, omega2)
-        model += get_rv2((P1,T01,K1,h1,k1), t)
-        model += get_rv2((P2,T02,K2,h2,k2), t)
+        model = model + get_rv2((P1,T01,K1,h1,k1), t)
+        model = model + get_rv2((P2,T02,K2,h2,k2), t)
 
     elif theta.size == 17:
         sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta
         h1, k1 = get_h_k(e1, omega1)
         h2, k2 = get_h_k(e2, omega2)
         h3, k3 = get_h_k(e3, omega3)
-        model += get_rv2((P1,T01,K1,h1,k1), t)
-        model += get_rv2((P2,T02,K2,h2,k2), t)
-        model += get_rv2((P3,T03,K3,h3,k3), t)
+        model = model + get_rv2((P1,T01,K1,h1,k1), t)
+        model = model + get_rv2((P2,T02,K2,h2,k2), t)
+        model = model + get_rv2((P3,T03,K3,h3,k3), t)
 
     else:
         raise ValueError('Weird number of model parameters.')
