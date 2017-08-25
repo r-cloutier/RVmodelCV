@@ -1,6 +1,6 @@
-import numpy as np
+from imports import *
 
-def P_prior(P, Pmin=1, Pmax=1e4):
+def P_prior(P, Pmin=1.25, Pmax=1e4):
     Pmin, Pmax = float(Pmin), float(Pmax)
     return 1. / (P*np.log(Pmax/Pmin))
 
@@ -8,9 +8,15 @@ def K_prior(K, Kmax=999, K0=1):
     Kmax, K0 = float(Kmax), float(K0)
     return 1. / (K0*(1+K/K0) * np.log(1+Kmax/K0))
 
-def e_prior():
-    return 1.
+#def e_prior():
+#    return 1.
 
+def e_prior(e, sigma_e=.2):
+    e = float(e)
+    PDF_Rayleigh = e/sigma_e**2 * np.exp(-.5*(e/sigma_e)**2)
+    CDF_Rayleigh = 1. - np.exp(-.5*(e/sigma_e)**2)
+    return PDF_Rayleigh / CDF_Rayleigh if 0 <= e <= 1 else 0
+        
 def omega_prior():
     return 1. / (2*np.pi)
 
@@ -69,3 +75,4 @@ def compute_planet_prior(theta):
     else:
         raise ValueError('Weird number of model parameters.')
     return planet_prior(Nplanets)
+

@@ -2,10 +2,7 @@
 Write functions to compute useful quantities from RV and transit 
 model parameters.
 '''
-import numpy as np
-import compute_hz as ch
-from uncertainties import unumpy
-from scipy.interpolate import interp1d
+from imports import *
 
 # Define conversion functions
 def days2sec(t):

@@ -19,6 +19,28 @@ def get_initializations(num, nplanets):
     return np.array(theta)
 
 
+def get_bounds(num, nplanets):
+    assert 1 <= num <= 6
+    assert 0 <= nplanets <= 3
+    f = open('setup/bounds_%.4d.dat'%num,'r')
+    g = f.readlines()
+    f.close()
+    bnds = []
+    for i in range(len(g)):
+	ls = g[i].split(',')
+	assert len(ls) == 2
+	try:
+	    bnd0 = float(ls[0])
+	except ValueError:
+	    bnd0 = None
+        try:
+            bnd1 = float(ls[1])
+        except ValueError:
+            bnd1 = None
+	bnds.append((bnd0, bnd1))
+    return bnds[:2+int(nplanets)*5]
+
+
 def get_h_k(e, omega):
     return np.sqrt(e)*np.cos(omega), np.sqrt(e)*np.sin(omega)
 

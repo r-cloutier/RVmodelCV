@@ -1,8 +1,5 @@
-import numpy as np
-import pylab as plt
+from imports import *
 from ad import admath
-#from PyAstronomy.pyasl import foldAt
-
 
 def Msun2kg(m):
     return m*1.9891e30

@@ -1,4 +1,4 @@
-import numpy as np
+import autograd.numpy as np
 import pylab as plt
 import scipy.optimize as op
 import sys
@@ -14,7 +14,7 @@ import time
 import rvs
 #import BIC
 #import massradius as mr
-import compute_hz as chz
+#import compute_hz as chz
 import rebound
 from scipy.stats import ks_2samp
 from scipy.interpolate import interp1d

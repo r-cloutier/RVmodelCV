@@ -1,5 +1,5 @@
 from imports import *
-from visualize_data import compute_rvmodel
+from visualize_data import *
 
 
 def lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
@@ -25,8 +25,6 @@ def lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     K = alpha**2 * np.exp(-.5 * ((np.sin(np.pi*dt/tau) / lp)**2 + (dt/le)**2)) ## 2 millisec
     erv = np.ascontiguousarray(erv).astype(float)
     Sigma = K + np.identity(N) * (erv**2 + sigmaJ**2)  ## 0.3 microsec
-    Sigma = Sigma.astype(float)
-    print Sigma.dtype
 
     # Invert matrix (using ad.linalg.inv)
     ##Sigmainv = linalg.inv(Sigma)
@@ -39,5 +37,14 @@ def lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
 
     return ll
 
+
 def neg_lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     return -1. * lnlike(theta, t, rv, erv, GPtheta)
+
+
+
+# TESTING
+if __name__ == '__main__':
+    GPtheta=(np.sqrt(3),50.,.5,20.)
+    t, rv, erv = get_dataset(1)
+    theta = 1., -1.

@@ -6,7 +6,7 @@ from savepickle import saveRVmodelCV
 from priors import *
 
 
-def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
+def compute_modelposterior_CV(theta, t, rv, erv, bnds, minN_2_fit=20):
     '''
     Do train/test split and compute the lnlikelihood of the rv data given a 
     model described by the model parameters theta. The model should contain 
@@ -38,13 +38,17 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
                                       np.ascontiguousarray(erv[ind+forecaststeps[i]])
 
             # Optimize keplerian parameters
-            nll = lambda *args: -lnlike(*args)
             args = (ttrain, rvtrain, ervtrain)
-            result = minimize(nll, theta, args=args)
-            thetaopt = result.x if result.success else theta
-            successes = np.append(successes, result.success)
-            #thetaopt = theta
-            #successes = np.append(successes, True)
+            #result = minimize(neg_lnlike, theta, method='L-BFGS-B', bnds=(0,None), 
+			      #args=args, options={'ftol': 1e-8, 'disp': False})
+            #thetaopt = result.x if result.success else theta
+            #successes = np.append(successes, result.success)
+	    thetaopt,_,d = fmin_l_bfgs_b(neg_lnlike, theta, args=args, approx_grad=True, 
+					 factr=10, bounds=bnds)
+	    s = True if d['warnflag'] == 0 else False
+	    successes = np.append(successes, s)
+            ##thetaopt = theta
+            ##successes = np.append(successes, True)
 
 	    # Save parameter values
 	    thetaops = np.insert(thetaops, k, thetaopt, axis=0)
@@ -53,11 +57,10 @@ def compute_modelposterior_CV(theta, t, rv, erv, minN_2_fit=20):
             #lnpri = np.log(compute_theta_prior(thetaopt))
 
             # Compute prior on the number of planets
-            #lnmodelpri = np.log(compute_planet_prior(thetaopt))
+            lnmodelpri = np.log(compute_planet_prior(thetaopt))
 
             # Compute lnlikelihood for this training set
-            lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest, rvtest, ervtest)) #+ \
-                                         #lnpri + lnmodelpri)
+            lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest, rvtest, ervtest) + lnmodelpri)
 
     # Return mean lnlikelihood and std of the mean
     mad_median = MAD(lnlikes) / np.sqrt(lnlikes.size)
@@ -94,9 +97,10 @@ def run_1model_CV(datanum, modelnum):
     i = modelnum
     print 'CV on %i planet model...'%i
     theta = get_initializations(datanum, i)
+    bnds = get_bounds(datanum, i)
     t0 = time.time()
     lnlikes, successes, thetaops, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv)
-    successfrac[i] = successes.sum() / float(successes.size)
+    successfrac[i] = np.sum(successes) / float(successes.size)
     times[i] = time.time()-t0
     print 'Took %.3e seconds\n'%times[i]
    
