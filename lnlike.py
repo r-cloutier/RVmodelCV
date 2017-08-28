@@ -43,6 +43,8 @@ def neg_lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
 
 
 
+
+
 # TESTING
 if __name__ == '__main__':
     GPtheta=(np.sqrt(3),50.,.5,20.)

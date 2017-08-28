@@ -62,6 +62,7 @@ def compute_modelposterior_CV(theta, t, rv, erv, bnds, minN_2_fit=20,
 
             # Compute lnlikelihood for this training set
             lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest, rvtest, ervtest) + lnmodelpri)
+            print theta,'\n',thetaopt,'\n',lnlikes[-1],'\n'
 
     # Return mean lnlikelihood and std of the mean
     g = successes
@@ -94,12 +95,18 @@ def run_1model_CV(datanum, modelnum):
     # Get data and theta
     t, rv, erv = get_dataset(datanum)
 
-    # Run CV on each planet model
+    # Get limits on data
     times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
     i = modelnum
     print 'CV on %i planet model...'%i
     theta = get_initializations(datanum, i)
     bnds = get_bounds(datanum, i)
+
+    # Precondition data
+    
+    
+    
+    # Run CV on each planet model
     t0 = time.time()
     lnlikes, successes, theta0s, thetaops, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv, bnds)
     successfrac[i] = np.sum(successes) / float(successes.size)
