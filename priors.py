@@ -41,7 +41,7 @@ def precondition_theta(theta_real):
                        precondition_data(C, Crange[0], Crange[1])
 
     elif theta_real.size == 7:
-        sigmaJ,C,P1,T01,K1,e1,omega1 = theta_real
+        sigmaJ,C,P1,M1,K1,e1,omega1 = theta_real
         theta_scaled =  precondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
                         precondition_data(C, Crange[0], Crange[1]), \
                         precondition_data(P1, Prange[0], Prange[1]), \
@@ -51,7 +51,7 @@ def precondition_theta(theta_real):
                         precondition_data(omega1, omegarange[0], omegarange[1])
     
     elif theta_real.size == 12:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta_real
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2 = theta_real
         theta_scaled =  precondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
                         precondition_data(C, Crange[0], Crange[1]), \
                         precondition_data(P1, Prange[0], Prange[1]), \
@@ -66,7 +66,7 @@ def precondition_theta(theta_real):
                         precondition_data(omega2, omegarange[0], omegarange[1])
         
     elif theta_real.size == 17:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta_real
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2,P3,M3,K3,e3,omega3 = theta_real
         theta_scaled =  precondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
                         precondition_data(C, Crange[0], Crange[1]), \
                         precondition_data(P1, Prange[0], Prange[1]), \
@@ -103,7 +103,7 @@ def recondition_theta(theta_scaled):
                      recondition_data(C, Crange[0], Crange[1])
 
     elif theta_scaled.size == 7:
-        sigmaJ,C,P1,T01,K1,e1,omega1 = theta_scaled
+        sigmaJ,C,P1,M1,K1,e1,omega1 = theta_scaled
         theta_real =  recondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
                       recondition_data(C, Crange[0], Crange[1]), \
                       recondition_data(P1, Prange[0], Prange[1]), \
@@ -113,7 +113,7 @@ def recondition_theta(theta_scaled):
                       recondition_data(omega1, omegarange[0], omegarange[1])
     
     elif theta_scaled.size == 12:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta_scaled
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2 = theta_scaled
         theta_real =  recondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
                       recondition_data(C, Crange[0], Crange[1]), \
                       recondition_data(P1, Prange[0], Prange[1]), \
@@ -128,7 +128,7 @@ def recondition_theta(theta_scaled):
                       recondition_data(omega2, omegarange[0], omegarange[1])
         
     elif theta_scaled.size == 17:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta_scaled
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2,P3,M3,K3,e3,omega3 = theta_scaled
         theta_real =  recondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
                       recondition_data(C, Crange[0], Crange[1]), \
                       recondition_data(P1, Prange[0], Prange[1]), \

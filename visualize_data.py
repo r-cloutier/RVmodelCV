@@ -44,6 +44,10 @@ def get_h_k(e, omega):
     return np.sqrt(e)*np.cos(omega), np.sqrt(e)*np.sin(omega)
 
 
+def get_T0(P, M):
+    return P * M/(2*np.pi)
+
+
 def compute_rvmodel(theta_real, t):
     N, theta_real = t.size, np.ascontiguousarray(theta_real)
     model = np.zeros(N)
@@ -52,19 +56,22 @@ def compute_rvmodel(theta_real, t):
         model = np.zeros(N)
 
     elif theta_real.size == 7:
-        sigmaJ,C,P1,T01,K1,e1,omega1 = theta_real
+        sigmaJ,C,P1,M1,K1,e1,omega1 = theta_real
+        T01 = get_T0(P1, M1)
         h1, k1 = get_h_k(e1, omega1)
         model = model + get_rv2((P1,T01,K1,h1,k1), t)
 
     elif theta_real.size == 12:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta_real
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2 = theta_real
+        T01, T02 = get_T0(P1, M1), get_T0(P2, M2)
         h1, k1 = get_h_k(e1, omega1)
         h2, k2 = get_h_k(e2, omega2)
         model = model + get_rv2((P1,T01,K1,h1,k1), t)
         model = model + get_rv2((P2,T02,K2,h2,k2), t)
 
     elif theta_real.size == 17:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta_real
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2,P3,M3,K3,e3,omega3 = theta_real
+        T01, T02, T03 = get_T0(P1, M1), get_T0(P2, M2), get_T0(P3, M3)
         h1, k1 = get_h_k(e1, omega1)
         h2, k2 = get_h_k(e2, omega2)
         h3, k3 = get_h_k(e3, omega3)

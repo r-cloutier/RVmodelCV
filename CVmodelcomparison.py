@@ -23,6 +23,9 @@ def compute_modelposterior_CV(theta_real, t, rv, erv, minN_2_fit=20,
     # Define the sizes of the training sets
     nforecasts = 1    # number of steps from last in training set
     T = np.arange(minN_2_fit, t.size-nforecasts)
+
+    # Define parameter limits
+    bnds = [(0,1) for _ in range(theta_real.size)]
     
     # Loop over each training set and each number of forecast steps
     lnlikes, successes = np.zeros(0), np.zeros(0, dtype=bool)
@@ -48,11 +51,10 @@ def compute_modelposterior_CV(theta_real, t, rv, erv, minN_2_fit=20,
             
             # Optimize keplerian parameters
             args = (ttrain, rvtrain, ervtrain)
-            bnds = [(0,1) for tmp in range(theta_scaled.size)]
             thetaopt,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta_scaled, args=args, approx_grad=True, 
 					 factr=factr, bounds=bnds, maxiter=int(Nmax),
                                          maxfun=int(Nmax))
-	    s = True if d['warnflag'] == 0 else False
+            s = True if d['warnflag'] == 0 else False
 	    successes = np.append(successes, s)
 
 	    # Save parameter values

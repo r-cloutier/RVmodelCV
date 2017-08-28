@@ -13,7 +13,7 @@ def lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
 
     # Compute model
     theta_scaled = np.ascontiguousarray(theta_scaled)
-    theta_real = recondition_data(theta_scaled)
+    theta_real = recondition_theta(theta_scaled)
     sigmaJ = theta_real[0]
     model = compute_rvmodel(theta_real, t)
     
