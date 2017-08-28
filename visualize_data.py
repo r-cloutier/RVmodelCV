@@ -2,7 +2,6 @@ from imports import *
 from periodogram import compute_LSperiodogram
 from rvmodel import get_rv2
 
-
 def get_dataset(num):
     assert 1 <= num <= 6
     t, rv, erv = np.loadtxt('data/rvs_%.4d.txt'%num).T
@@ -15,8 +14,8 @@ def get_initializations(num, nplanets):
     f = open('setup/initializations_%.4d.dat'%num,'r')
     g = f.readlines()
     f.close()
-    theta = [float(i) for i in g[nplanets].split(',')]
-    return np.array(theta)
+    theta_real = [float(i) for i in g[nplanets].split(',')]
+    return np.ascontiguousarray(theta_real)
 
 
 def get_bounds(num, nplanets):
@@ -45,27 +44,27 @@ def get_h_k(e, omega):
     return np.sqrt(e)*np.cos(omega), np.sqrt(e)*np.sin(omega)
 
 
-def compute_rvmodel(theta, t):
-    N, theta = t.size, np.ascontiguousarray(theta)
+def compute_rvmodel(theta_real, t):
+    N, theta_real = t.size, np.ascontiguousarray(theta_real)
     model = np.zeros(N)
-    if theta.size == 2:
-	sigmaJ,C = theta
+    if theta_real.size == 2:
+	sigmaJ,C = theta_real
         model = np.zeros(N)
 
-    elif theta.size == 7:
-        sigmaJ,C,P1,T01,K1,e1,omega1 = theta
+    elif theta_real.size == 7:
+        sigmaJ,C,P1,T01,K1,e1,omega1 = theta_real
         h1, k1 = get_h_k(e1, omega1)
         model = model + get_rv2((P1,T01,K1,h1,k1), t)
 
-    elif theta.size == 12:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta
+    elif theta_real.size == 12:
+        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta_real
         h1, k1 = get_h_k(e1, omega1)
         h2, k2 = get_h_k(e2, omega2)
         model = model + get_rv2((P1,T01,K1,h1,k1), t)
         model = model + get_rv2((P2,T02,K2,h2,k2), t)
 
-    elif theta.size == 17:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta
+    elif theta_real.size == 17:
+        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta_real
         h1, k1 = get_h_k(e1, omega1)
         h2, k2 = get_h_k(e2, omega2)
         h3, k3 = get_h_k(e3, omega3)

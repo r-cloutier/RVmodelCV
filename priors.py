@@ -6,23 +6,151 @@ def _param_conditions():
     Return the limits of the parameter values to map input parameters in physical units 
     to the interval [0,1].
     '''
-    sigmaJrange = 1, 99
+    sigmaJrange = 0., 99.
     Crange = -1e3, 1e3
     Prange = 1.25, 1e4
-    Mrange = 0, 2*np.pi
-    Krange = 0, 999
-    erange = 0, 1
-    omegarange = 0, 2*np.pi
+    Mrange = 0., 2*np.pi
+    Krange = 0., 999.
+    erange = 0., 1.
+    omegarange = 0., 2*np.pi
     return sigmaJrange, Crange, Prange, Mrange, Krange, erange, omegarange
 
-
 def precondition_data(x, A, B):
+    '''
+    Phyiscal units to unit interval.
+    '''
     A = float(A)
     return -(x - A) / (A - B)
 
 def recondition_data(x, A, B):
+    '''
+    Unit interval to physical units.
+    '''
     A = float(A)
     return -1 * x * (A - B) + A
+
+def precondition_theta(theta_real):
+    '''
+    Scale parameters in theta to the unit interval.
+    '''
+    theta_real = np.ascontiguousarray(theta_real)
+    sigmaJrange, Crange, Prange, Mrange, Krange, erange, omegarange = _param_conditions()
+    if theta_real.size == 2:
+        sigmaJ,C = theta_real
+        theta_scaled = precondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                       precondition_data(C, Crange[0], Crange[1])
+
+    elif theta_real.size == 7:
+        sigmaJ,C,P1,T01,K1,e1,omega1 = theta_real
+        theta_scaled =  precondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                        precondition_data(C, Crange[0], Crange[1]), \
+                        precondition_data(P1, Prange[0], Prange[1]), \
+                        precondition_data(M1, Mrange[0], Mrange[1]), \
+                        precondition_data(K1, Krange[0], Krange[1]), \
+                        precondition_data(e1, erange[0], erange[1]), \
+                        precondition_data(omega1, omegarange[0], omegarange[1])
+    
+    elif theta_real.size == 12:
+        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta_real
+        theta_scaled =  precondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                        precondition_data(C, Crange[0], Crange[1]), \
+                        precondition_data(P1, Prange[0], Prange[1]), \
+                        precondition_data(M1, Mrange[0], Mrange[1]), \
+                        precondition_data(K1, Krange[0], Krange[1]), \
+                        precondition_data(e1, erange[0], erange[1]), \
+                        precondition_data(omega1, omegarange[0], omegarange[1]), \
+                        precondition_data(P2, Prange[0], Prange[1]), \
+                        precondition_data(M2, Mrange[0], Mrange[1]), \
+                        precondition_data(K2, Krange[0], Krange[1]), \
+                        precondition_data(e2, erange[0], erange[1]), \
+                        precondition_data(omega2, omegarange[0], omegarange[1])
+        
+    elif theta_real.size == 17:
+        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta_real
+        theta_scaled =  precondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                        precondition_data(C, Crange[0], Crange[1]), \
+                        precondition_data(P1, Prange[0], Prange[1]), \
+                        precondition_data(M1, Mrange[0], Mrange[1]), \
+                        precondition_data(K1, Krange[0], Krange[1]), \
+                        precondition_data(e1, erange[0], erange[1]), \
+                        precondition_data(omega1, omegarange[0], omegarange[1]),\
+                        precondition_data(P2, Prange[0], Prange[1]), \
+                        precondition_data(M2, Mrange[0], Mrange[1]), \
+                        precondition_data(K2, Krange[0], Krange[1]), \
+                        precondition_data(e2, erange[0], erange[1]), \
+                        precondition_data(omega2, omegarange[0], omegarange[1]), \
+                        precondition_data(P3, Prange[0], Prange[1]), \
+                        precondition_data(M3, Mrange[0], Mrange[1]), \
+                        precondition_data(K3, Krange[0], Krange[1]), \
+                        precondition_data(e3, erange[0], erange[1]), \
+                        precondition_data(omega3, omegarange[0], omegarange[1])
+        
+    else:
+        raise ValueError('Weird number of model parameters.')
+
+    return np.ascontiguousarray(theta_scaled)
+
+
+def recondition_theta(theta_scaled):
+    '''
+    Re-Scale parameters from the unit interval to physical units.
+    '''
+    theta_scaled = np.ascontiguousarray(theta_scaled)
+    sigmaJrange, Crange, Prange, Mrange, Krange, erange, omegarange = _param_conditions()
+    if theta_scaled.size == 2:
+        sigmaJ,C = theta_scaled
+        theta_real = recondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                     recondition_data(C, Crange[0], Crange[1])
+
+    elif theta_scaled.size == 7:
+        sigmaJ,C,P1,T01,K1,e1,omega1 = theta_scaled
+        theta_real =  recondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                      recondition_data(C, Crange[0], Crange[1]), \
+                      recondition_data(P1, Prange[0], Prange[1]), \
+                      recondition_data(M1, Mrange[0], Mrange[1]), \
+                      recondition_data(K1, Krange[0], Krange[1]), \
+                      recondition_data(e1, erange[0], erange[1]), \
+                      recondition_data(omega1, omegarange[0], omegarange[1])
+    
+    elif theta_scaled.size == 12:
+        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta_scaled
+        theta_real =  recondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                      recondition_data(C, Crange[0], Crange[1]), \
+                      recondition_data(P1, Prange[0], Prange[1]), \
+                      recondition_data(M1, Mrange[0], Mrange[1]), \
+                      recondition_data(K1, Krange[0], Krange[1]), \
+                      recondition_data(e1, erange[0], erange[1]), \
+                      recondition_data(omega1, omegarange[0], omegarange[1]), \
+                      recondition_data(P2, Prange[0], Prange[1]), \
+                      recondition_data(M2, Mrange[0], Mrange[1]), \
+                      recondition_data(K2, Krange[0], Krange[1]), \
+                      recondition_data(e2, erange[0], erange[1]), \
+                      recondition_data(omega2, omegarange[0], omegarange[1])
+        
+    elif theta_scaled.size == 17:
+        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta_scaled
+        theta_real =  recondition_data(sigmaJ, sigmaJrange[0], sigmaJrange[1]), \
+                      recondition_data(C, Crange[0], Crange[1]), \
+                      recondition_data(P1, Prange[0], Prange[1]), \
+                      recondition_data(M1, Mrange[0], Mrange[1]), \
+                      recondition_data(K1, Krange[0], Krange[1]), \
+                      recondition_data(e1, erange[0], erange[1]), \
+                      recondition_data(omega1, omegarange[0], omegarange[1]),\
+                      recondition_data(P2, Prange[0], Prange[1]), \
+                      recondition_data(M2, Mrange[0], Mrange[1]), \
+                      recondition_data(K2, Krange[0], Krange[1]), \
+                      recondition_data(e2, erange[0], erange[1]), \
+                      recondition_data(omega2, omegarange[0], omegarange[1]), \
+                      recondition_data(P3, Prange[0], Prange[1]), \
+                      recondition_data(M3, Mrange[0], Mrange[1]), \
+                      recondition_data(K3, Krange[0], Krange[1]), \
+                      recondition_data(e3, erange[0], erange[1]), \
+                      recondition_data(omega3, omegarange[0], omegarange[1])
+        
+    else:
+        raise ValueError('Weird number of model parameters.')
+
+    return np.ascontiguousarray(theta_real)
 
 
 def P_prior(P):
@@ -58,7 +186,8 @@ def C_prior(C):
     Cmax = float(Clim[1])
     return 1./(2*Cmax) if abs(C) <= Cmax else 0.
 
-def compute_theta_prior(theta):
+
+'''def compute_theta_prior(theta):
     theta = np.ascontiguousarray(theta)
     if theta.size == 2:
         sigmaJ,C = theta
@@ -80,7 +209,7 @@ def compute_theta_prior(theta):
                e_prior()**3 * omega_prior()**3 * M_prior()**3
 
     else:
-        raise ValueError('Weird number of model parameters.')
+        raise ValueError('Weird number of model parameters.')'''
 
 def planet_prior(Nplanets, alpha=1./3):
     if Nplanets == 0:
@@ -103,28 +232,3 @@ def compute_planet_prior(theta):
     else:
         raise ValueError('Weird number of model parameters.')
     return planet_prior(Nplanets)
-
-
-def precondition_data(theta):
-    theta = np.ascontiguousarray(theta)
-    if theta.size == 2:
-        sigmaJ,C = theta
-        return 
-
-    elif theta.size == 7:
-        sigmaJ,C,P1,T01,K1,e1,omega1 = theta
-        return jitter_prior(sigmaJ) * C_prior(C) * P_prior(P1) * K_prior(K1) * e_prior() * omega_prior() * M_prior()
-
-    elif theta.size == 12:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta
-        return jitter_prior(sigmaJ) * C_prior(C) * P_prior(P1) * P_prior(P2) * K_prior(K1) * K_prior(K2) * \
-               e_prior()**2 * omega_prior()**2 * M_prior()**2
-
-    elif theta.size == 17:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta
-        return jitter_prior(sigmaJ) * C_prior(C) * P_prior(P1) * P_prior(P2) * P_prior(P3) * \
-               K_prior(K1) * K_prior(K2) * K_prior(K3) * \
-               e_prior()**3 * omega_prior()**3 * M_prior()**3
-
-    else:
-        raise ValueError('Weird number of model parameters.')

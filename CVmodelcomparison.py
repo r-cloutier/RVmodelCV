@@ -6,7 +6,7 @@ from savepickle import saveRVmodelCV
 from priors import *
 
 
-def compute_modelposterior_CV(theta, t, rv, erv, bnds, minN_2_fit=20,
+def compute_modelposterior_CV(theta_real, t, rv, erv, minN_2_fit=20,
                               factr=1e1, Nmax=2e4):
     '''
     Do train/test split and compute the lnlikelihood of the rv data given a 
@@ -26,7 +26,8 @@ def compute_modelposterior_CV(theta, t, rv, erv, bnds, minN_2_fit=20,
     
     # Loop over each training set and each number of forecast steps
     lnlikes, successes = np.zeros(0), np.zeros(0, dtype=bool)
-    k, theta0s, thetaops = 0, np.zeros((0,len(theta))), np.zeros((0,len(theta)))
+    k, theta0s_real, thetaops_real = 0, np.zeros((0,len(theta_real))), \
+                                     np.zeros((0,len(theta_real)))
     forecaststeps = np.arange(nforecasts)
     for i in range(nforecasts):
         for j in range(T.size):
@@ -39,35 +40,39 @@ def compute_modelposterior_CV(theta, t, rv, erv, bnds, minN_2_fit=20,
                                       np.ascontiguousarray(erv[ind+forecaststeps[i]])
 
             # Get initial parameter guesses
-            theta = thetaops[successes][-1] if True in successes else theta
-            theta0s = np.insert(theta0s, k, theta, axis=0)
+            theta_real = thetaops_real[successes][-1] if True in successes else theta_real
+            theta0s_real = np.insert(theta0s_real, k, theta_real, axis=0)
+
+            # Precondition theta to unit interval
+            theta_scaled = precondition_theta(theta_real)
             
             # Optimize keplerian parameters
             args = (ttrain, rvtrain, ervtrain)
-            thetaopt,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta, args=args, approx_grad=True, 
+            bnds = [(0,1) for tmp in range(theta_scaled.size)]
+            thetaopt,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta_scaled, args=args, approx_grad=True, 
 					 factr=factr, bounds=bnds, maxiter=int(Nmax),
                                          maxfun=int(Nmax))
 	    s = True if d['warnflag'] == 0 else False
 	    successes = np.append(successes, s)
 
 	    # Save parameter values
-	    thetaops = np.insert(thetaops, k, thetaopt, axis=0)
+            thetaopt_real = recondition_theta(thetaopt)
+	    thetaops_real = np.insert(thetaops_real, k, thetaopt_real, axis=0)
             k += 1
             
             # Compute priors on model parameters
             #lnpri = np.log(compute_theta_prior(thetaopt))
 
             # Compute prior on the number of planets
-            lnmodelpri = np.log(compute_planet_prior(thetaopt))
+            lnmodelpri = np.log(compute_planet_prior(thetaopt_real))
 
             # Compute lnlikelihood for this training set
             lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest, rvtest, ervtest) + lnmodelpri)
-            print theta,'\n',thetaopt,'\n',lnlikes[-1],'\n'
-
+            
     # Return mean lnlikelihood and std of the mean
     g = successes
     mad_median = MAD(lnlikes[g]) / np.sqrt(lnlikes[g].size)
-    return lnlikes, successes, theta0s, thetaops, np.median(lnlikes[g]), mad_median
+    return lnlikes, successes, theta0s_real, thetaops_real, np.median(lnlikes[g]), mad_median
 
 
 def MAD(arr):
@@ -99,16 +104,13 @@ def run_1model_CV(datanum, modelnum):
     times, successfrac, lls, ells = np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4)
     i = modelnum
     print 'CV on %i planet model...'%i
-    theta = get_initializations(datanum, i)
-    bnds = get_bounds(datanum, i)
-
-    # Precondition data
-    
-    
+    theta_real = get_initializations(datanum, i)
+    #bnds = get_bounds(datanum, i)
     
     # Run CV on each planet model
     t0 = time.time()
-    lnlikes, successes, theta0s, thetaops, lls[i], ells[i] = compute_modelposterior_CV(theta, t, rv, erv, bnds)
+    lnlikes, successes, theta0s, thetaops, lls[i], ells[i] = compute_modelposterior_CV(theta_real,
+                                                                                       t, rv, erv)
     successfrac[i] = np.sum(successes) / float(successes.size)
     times[i] = time.time()-t0
     print 'Took %.3e seconds\n'%times[i]
@@ -119,4 +121,5 @@ def run_1model_CV(datanum, modelnum):
 if __name__ == '__main__':
     nplanets = int(sys.argv[1])
     times, successfrac, lnlikes, successes, theta0s, thetas, lls, ells = run_1model_CV(1, nplanets)
-    self = saveRVmodelCV(times, successfrac, lnlikes, successes, theta0s, thetas, lls, ells, 'results/test_wopriors%i'%nplanets)
+    self = saveRVmodelCV(times, successfrac, lnlikes, successes, theta0s, thetas, lls, ells,
+                         'results/test_wopriors%i'%nplanets)

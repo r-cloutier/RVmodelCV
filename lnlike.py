@@ -1,12 +1,8 @@
 from imports import *
 from visualize_data import *
+from priors import recondition_theta
 
-
-def lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
-    # convert to adnumber objects
-    ##theta = adnumber(theta)
-    ##t, rv, erv = adnumber(t), adnumber(rv), adnumber(erv)  ## 9 millisec
-
+def lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     # check
     N = t.size
     assert rv.size == N
@@ -16,18 +12,18 @@ def lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     alpha, le, lp, tau = np.ascontiguousarray(GPtheta)
 
     # Compute model
-    theta = np.ascontiguousarray(theta)
-    sigmaJ = theta[0]
-    model = compute_rvmodel(theta, t)  ## .06 millisec
+    theta_scaled = np.ascontiguousarray(theta_scaled)
+    theta_real = recondition_data(theta_scaled)
+    sigmaJ = theta_real[0]
+    model = compute_rvmodel(theta_real, t)
     
     # Compute elements of the covariance matrix
-    dt = abs(np.tile(t, (N,1)) - np.tile(t, (N,1)).T) ## 1.5 millisec
-    K = alpha**2 * np.exp(-.5 * ((np.sin(np.pi*dt/tau) / lp)**2 + (dt/le)**2)) ## 2 millisec
+    dt = abs(np.tile(t, (N,1)) - np.tile(t, (N,1)).T)
+    K = alpha**2 * np.exp(-.5 * ((np.sin(np.pi*dt/tau) / lp)**2 + (dt/le)**2))
     erv = np.ascontiguousarray(erv).astype(float)
-    Sigma = K + np.identity(N) * (erv**2 + sigmaJ**2)  ## 0.3 microsec
+    Sigma = K + np.identity(N) * (erv**2 + sigmaJ**2)
 
-    # Invert matrix (using ad.linalg.inv)
-    ##Sigmainv = linalg.inv(Sigma)
+    # Invert matrix
     Sigmainv = np.linalg.inv(Sigma)    
 
     # Compute loglikelihood
@@ -38,15 +34,5 @@ def lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     return ll
 
 
-def neg_lnlike(theta, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
-    return -1. * lnlike(theta, t, rv, erv, GPtheta)
-
-
-
-
-
-# TESTING
-if __name__ == '__main__':
-    GPtheta=(np.sqrt(3),50.,.5,20.)
-    t, rv, erv = get_dataset(1)
-    theta = 1., -1.
+def neg_lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
+    return -1. * lnlike(theta_scaled, t, rv, erv, GPtheta)
