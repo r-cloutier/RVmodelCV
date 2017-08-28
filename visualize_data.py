@@ -12,7 +12,7 @@ def get_dataset(num):
 def get_initializations(num, nplanets):
     assert 1 <= num <= 6
     assert 0 <= nplanets <= 3
-    f = open('initializations/initializations_%.4d.dat'%num,'r')
+    f = open('setup/initializations_%.4d.dat'%num,'r')
     g = f.readlines()
     f.close()
     theta = [float(i) for i in g[nplanets].split(',')]
