@@ -6,4 +6,4 @@
 #PBS -N RVmodelCV_<<datanum>>_<<modelnum>>_<<ind>>_<<nforecasts>>_<<minN_2_fit>>
 # EVERYTHING ABOVE THIS COMMENT IS NECESSARY, SHOULD ONLY CHANGE nodes,ppn,walltime and my_job_name VALUES
 cd $PBS_O_WORKDIR
-python CVmodelcomparison.py <<datanum>> <<modelnum>> <<ind>> <<nforecasts>> <<minN_2_fit>>
+python CVmodelcomparison_qsubjob.py <<datanum>> <<modelnum>> <<ind>> <<nforecasts>> <<minN_2_fit>>

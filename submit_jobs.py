@@ -36,8 +36,9 @@ def submit_jobs(datanum, modelnums=[0,1,2,3], nforecasts=1, minN_2_fit=20):
                 h.write(g)
                 h.close()
                 
-                os.system('qsub jobscript')
-                os.system('rm jobscript')
+                #os.system('qsub jobscript')
+                #os.system('rm jobscript')
+		os.system('cat jobscript')
 
 
 if __name__ == '__main__':

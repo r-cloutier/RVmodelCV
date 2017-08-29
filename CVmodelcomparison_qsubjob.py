@@ -2,7 +2,7 @@ from imports import *
 from scipy.optimize import minimize, fmin_l_bfgs_b
 from lnlike import *
 from visualize_data import *
-from savepickle import saveRVmodelCV
+from savepickle import *
 from priors import *
 
 
@@ -19,7 +19,10 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     # Setup
     t0 = time.time()
     folder = 'RVdata%.4d'%datanum
-    outsuffix = 'qsubtest_%i_%i_%i_%i'%(modelnum, ind, nforecasts, minN_2_fit)
+    outsuffix = 'qsubtest_modelnum%i_Ntrain%i_nforecasts%i_minN2fit%i'%(modelnum, 
+									ind, 
+									nforecasts, 
+									minN_2_fit)
     
     # Get data
     t, rv, erv = get_dataset(datanum)
@@ -64,6 +67,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
 	os.mkdir('results/%s'%folder)
     except OSError:
 	pass
+    print 'saving...'
     self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, ll,
                               'results/%s/%s'%(folder, outsuffix))
 
