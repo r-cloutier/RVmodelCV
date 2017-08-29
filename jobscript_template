@@ -3,7 +3,7 @@
 #PBS -q workq
 #PBS -r n
 #PBS -l walltime=48:00:00
-#PBS -N RVmodelCV_<<datanum>>_<<modelnum>>_<<ind>>_<<nforecasts>>_<<min_2_fit>>
+#PBS -N RVmodelCV_<<datanum>>_<<modelnum>>_<<ind>>_<<nforecasts>>_<<minN_2_fit>>
 # EVERYTHING ABOVE THIS COMMENT IS NECESSARY, SHOULD ONLY CHANGE nodes,ppn,walltime and my_job_name VALUES
 cd $PBS_O_WORKDIR
-python CVmodelcomparison.py <<datanum>> <<modelnum>> <<ind>> <<nforecasts>> <<min_2_fit>>
+python CVmodelcomparison.py <<datanum>> <<modelnum>> <<ind>> <<nforecasts>> <<minN_2_fit>>

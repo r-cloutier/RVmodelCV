@@ -19,7 +19,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     # Setup
     t0 = time.time()
     folder = 'RVdata%.4d'%datanum
-    outsuffix = 'qsubtest_%i_%i_%i_%i'%(modelnum, ind, nforecasts, min_2_fit)
+    outsuffix = 'qsubtest_%i_%i_%i_%i'%(modelnum, ind, nforecasts, minN_2_fit)
     
     # Get data
     t, rv, erv = get_dataset(datanum)
@@ -91,7 +91,7 @@ def preferred_model(models, lls, ells):
 
 
 if __name__ == '__main__':
-    datanum, modelnum, ind, nforecasts, min_2_fit = int(sys.argv[1]), int(sys.argv[2]), \
-                                                    int(sys.argv[3]), int(sys.argv[4]), \
-                                                    int(sys.argv[5])
-    #compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit)
+    datanum, modelnum, ind, nforecasts, minN_2_fit = int(sys.argv[1]), int(sys.argv[2]), \
+                                                     int(sys.argv[3]), int(sys.argv[4]), \
+                                                     int(sys.argv[5])
+    compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit)

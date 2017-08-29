@@ -29,7 +29,7 @@ def submit_jobs(datanum, modelnums=[0,1,2,3], nforecasts=1, minN_2_fit=20):
                 g = g.replace('<<modelnum>>','%i'%m)
                 g = g.replace('<<ind>>','%i'%int(T[j]))
                 g = g.replace('<<nforecasts>>','%i'%nforecasts)
-		g = g.replace('<<min_2_fit>>','%i'%min_2_fit)
+		g = g.replace('<<minN_2_fit>>','%i'%minN_2_fit)
                 
                 # Submit job
                 h = open('jobscript', 'w')
@@ -37,7 +37,7 @@ def submit_jobs(datanum, modelnums=[0,1,2,3], nforecasts=1, minN_2_fit=20):
                 h.close()
                 
                 os.system('qsub jobscript')
-                os.sytem('rm jobscript')
+                os.system('rm jobscript')
 
 
 if __name__ == '__main__':
