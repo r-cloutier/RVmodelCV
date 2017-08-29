@@ -2,6 +2,7 @@ from imports import *
 from visualize_data import *
 from priors import recondition_theta
 
+
 def lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     # check
     N = t.size
@@ -9,11 +10,12 @@ def lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     assert erv.size == N
 
     # define fixed covariance hyperparameters
-    alpha, le, lp, tau = np.ascontiguousarray(GPtheta)
+    alpha, le, lp, tau = GPtheta
 
     # Compute model
     theta_scaled = np.ascontiguousarray(theta_scaled)
     theta_real = recondition_theta(theta_scaled)
+    print theta_real, '\n'
     sigmaJ = theta_real[0]
     model = compute_rvmodel(theta_real, t)
     

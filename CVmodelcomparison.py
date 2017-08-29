@@ -51,17 +51,17 @@ def compute_modelposterior_CV(theta_real, t, rv, erv, minN_2_fit=20,
             
             # Optimize keplerian parameters
             args = (ttrain, rvtrain, ervtrain)
-            thetaopt,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta_scaled, args=args, approx_grad=True, 
-					 factr=factr, bounds=bnds, maxiter=int(Nmax),
-                                         maxfun=int(Nmax))
+            thetaopt_scaled,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta_scaled, args=args,
+                                                approx_grad=True, factr=factr, bounds=bnds,
+                                                maxiter=int(Nmax), maxfun=int(Nmax))
             s = True if d['warnflag'] == 0 else False
 	    successes = np.append(successes, s)
 
 	    # Save parameter values
-            thetaopt_real = recondition_theta(thetaopt)
+            thetaopt_real = recondition_theta(thetaopt_scaled)
 	    thetaops_real = np.insert(thetaops_real, k, thetaopt_real, axis=0)
             k += 1
-            
+
             # Compute priors on model parameters
             #lnpri = np.log(compute_theta_prior(thetaopt))
 
@@ -69,7 +69,8 @@ def compute_modelposterior_CV(theta_real, t, rv, erv, minN_2_fit=20,
             lnmodelpri = np.log(compute_planet_prior(thetaopt_real))
 
             # Compute lnlikelihood for this training set
-            lnlikes = np.append(lnlikes, lnlike(thetaopt, ttest, rvtest, ervtest) + lnmodelpri)
+            lnlikes = np.append(lnlikes, lnlike(thetaopt_scaled, ttest, rvtest, ervtest) + \
+                                lnmodelpri)
             
     # Return mean lnlikelihood and std of the mean
     g = successes
