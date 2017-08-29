@@ -3,8 +3,8 @@ from imports import *
 
 def _param_conditions():
     '''
-    Return the limits of the parameter values to map input parameters in physical units 
-    to the interval [0,1].
+    Return the limits of the parameter values to map input parameters in physical 
+    units to the interval [0,1].
     '''
     sigmaJrange = 0., 99.
     Crange = -1e3, 1e3
@@ -15,6 +15,7 @@ def _param_conditions():
     omegarange = 0., 2*np.pi
     return sigmaJrange, Crange, Prange, Mrange, Krange, erange, omegarange
 
+
 def precondition_data(x, A, B):
     '''
     Phyiscal units to unit interval.
@@ -22,12 +23,14 @@ def precondition_data(x, A, B):
     A = float(A)
     return -(x - A) / (A - B)
 
+
 def recondition_data(x, A, B):
     '''
     Unit interval to physical units.
     '''
     A = float(A)
     return -1 * x * (A - B) + A
+
 
 def precondition_theta(theta_real):
     '''

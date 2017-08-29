@@ -2,6 +2,7 @@ from imports import *
 from periodogram import compute_LSperiodogram
 from rvmodel import get_rv2
 
+
 def get_dataset(num):
     assert 1 <= num <= 6
     t, rv, erv = np.loadtxt('data/rvs_%.4d.txt'%num).T

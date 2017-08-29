@@ -3,7 +3,7 @@ from visualize_data import *
 from priors import recondition_theta
 
 
-def lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
+def lnlike(theta_real, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     # check
     N = t.size
     assert rv.size == N
@@ -13,9 +13,7 @@ def lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     alpha, le, lp, tau = GPtheta
 
     # Compute model
-    theta_scaled = np.ascontiguousarray(theta_scaled)
-    theta_real = recondition_theta(theta_scaled)
-    print theta_real, '\n'
+    theta_real = np.ascontiguousarray(theta_real)
     sigmaJ = theta_real[0]
     model = compute_rvmodel(theta_real, t)
     
@@ -36,5 +34,5 @@ def lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
     return ll
 
 
-def neg_lnlike(theta_scaled, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
-    return -1. * lnlike(theta_scaled, t, rv, erv, GPtheta)
+def neg_lnlike(theta_real, t, rv, erv, GPtheta=(np.sqrt(3),50.,.5,20.)):
+    return -1. * lnlike(theta_real, t, rv, erv, GPtheta)
