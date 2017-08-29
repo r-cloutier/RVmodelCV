@@ -15,8 +15,8 @@ def get_initializations(num, nplanets):
     f = open('setup/initializations_%.4d.dat'%num,'r')
     g = f.readlines()
     f.close()
-    theta_real = [float(i) for i in g[nplanets].split(',')]
-    return np.ascontiguousarray(theta_real)
+    theta_real = np.ascontiguousarray(g).astype('float')
+    return theta_real[:2+int(nplanets)*5]
 
 
 def get_bounds(num, nplanets):

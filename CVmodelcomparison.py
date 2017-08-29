@@ -102,7 +102,7 @@ def run_1model_CV(datanum, modelnum):
     print 'CV on %i planet model...'%i
     theta_real = get_initializations(datanum, i)
     bnds = get_bounds(datanum, i)
-    
+
     # Run CV on each planet model
     t0 = time.time()
     lnlikes, successes, theta0s, thetaops, lls[i], ells[i] = compute_modelposterior_CV(theta_real,
