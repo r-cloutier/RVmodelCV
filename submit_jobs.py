@@ -1,4 +1,4 @@
-from CVmodelcomparison import *
+from CVmodelcomparison_qsubjob import *
 
 
 def submit_jobs(datanum, modelnums=[0,1,2,3], nforecasts=1, minN_2_fit=20):
@@ -36,10 +36,10 @@ def submit_jobs(datanum, modelnums=[0,1,2,3], nforecasts=1, minN_2_fit=20):
                 h.write(g)
                 h.close()
                 
-                #os.system('qsub jobscript')
-                #os.sytem('rm jobscript')
-                os.system('cat jobscript')
-                
-                #ind = int(T[j])
-                #lnlike, success, theta0, thetaopt, = compute_modelposterior_CV(datanum, m, ind, nforecasts)
-                
+                os.system('qsub jobscript')
+                os.sytem('rm jobscript')
+
+
+if __name__ == '__main__':
+    datanum, modelnums = 1, [0]
+    submit_jobs(datanum, modelnums)

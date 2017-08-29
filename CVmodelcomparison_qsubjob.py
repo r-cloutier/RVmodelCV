@@ -56,6 +56,14 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     ll = lnlike(theta_real, ttest, rvtest, ervtest) + lnmodelpri
 
     # Save results
+    try:
+	os.mkdir('results')
+    except OSError:
+	pass
+    try:
+	os.mkdir('results/%s'%folder)
+    except OSError:
+	pass
     self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, ll,
                               'results/%s/%s'%(folder, outsuffix))
 
