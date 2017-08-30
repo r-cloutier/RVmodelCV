@@ -159,15 +159,12 @@ def recondition_theta(theta_scaled):
 def P_prior(P):
     _,_,Plims,_,_,_,_ = _param_conditions()
     Pmin, Pmax = float(Plims[0]), float(Plims[1])
-    if P < 0:
-	return 1. / (P*np.log(Pmax/Pmin))
-    else:
-	return 0.
+    return 1. / (P*np.log(Pmax/Pmin)) if Pmin <= P <= Pmax else 0.
 
 def K_prior(K, K0=1):
     _,_,_,_,Klims,_,_ = _param_conditions()
-    Kmax, K0 = float(Klims[1]), float(K0)
-    return 1. / (K0*(1+K/K0) * np.log(1+Kmax/K0))
+    Kmin, Kmax, K0 = float(Klims[0]), float(Klims[1]), float(K0)
+    return 1. / (K0*(1+K/K0) * np.log(1+Kmax/K0)) if Kmin <= K <= Kmax else 0.
 
 def e_prior(e, sigma_e=.2):
     e = float(e)
@@ -184,8 +181,8 @@ def M_prior():  # mean anomaly
 
 def jitter_prior(sigma, sigma0=1):
     sigmaJlim,_,_,_,_,_,_ = _param_conditions()
-    sigmamax, sigma0 = float(sigmaJlim[1]), float(sigma0)
-    return 1. / (sigma0*(1+sigma/sigma0) * np.log(1+sigmamax/sigma0))
+    sigmamin, sigmamax, sigma0 = float(sigmaJlim[0]), float(sigmaJlim[1]), float(sigma0)
+    return 1. / (sigma0*(1+sigma/sigma0) * np.log(1+sigmamax/sigma0)) if sigmamin <= sigma <= sigmamax else 0.
 
 def C_prior(C):
     _,Clim,_,_,_,_,_ = _param_conditions()
