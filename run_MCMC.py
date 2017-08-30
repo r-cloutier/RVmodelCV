@@ -38,6 +38,7 @@ def lnprob(theta_real, t, rv, erv):
 def get_initialization(theta):
     #sigmaJ,C,P1,M1,K1,e1,omega1,... = theta
     initialize = np.append([.1,1], np.tile([1,1,1,1e-2,1],3))
+    initialize[12] = 10.
     return initialize[:len(theta)]
 
     
