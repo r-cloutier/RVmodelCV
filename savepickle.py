@@ -36,6 +36,25 @@ class saveRVmodelCV_qsub:
         f.close()
 
 
+class SaveQsubResults:
+    def __init__(self, datanum, modelnum):
+	# Get results from this dataset and model
+	self.datanum, self.model = datanum, modelnum
+	self.pickles = np.array(glob.glob('results/RVdata%.4d/qsubtest_modelnum%i_*'%(datanum, modelnum)))
+	self.npickles = self.pickles.size
+	self.nparams = 2 + int(modelnum)*5
+	self.theta0s, self.thetas, self.lnlikes = np.zeros((0, self.nparams)), \
+						  np.zeros((0, self.nparams)), \
+						  np.zeros(0)
+	k = 0
+	for i in range(self.npickles):
+	    d = loadpickle(self.pickles[i])
+	    self.theta0s = np.insert(self.theta0s, k, d.theta0, axis=0)
+            self.thetas = np.insert(self.thetas, k, d.theta, axis=0)
+	    self.lnlikes = np.append(self.lnlikes, d.ll)
+	    k += 1
+
+
 def loadpickle(fname):
     f = open(fname, 'rb')
     self = pickle.load(f)
