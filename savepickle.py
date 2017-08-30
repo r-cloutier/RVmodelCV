@@ -48,6 +48,7 @@ class SaveQsubResults:
 						  np.zeros(0)
 	k = 0
 	for i in range(self.npickles):
+	    print float(i) / self.npickles
 	    d = loadpickle(self.pickles[i])
 	    self.theta0s = np.insert(self.theta0s, k, d.theta0, axis=0)
             self.thetas = np.insert(self.thetas, k, d.theta, axis=0)

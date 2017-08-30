@@ -42,5 +42,5 @@ def submit_jobs(datanum, modelnums=[0,1,2,3], nforecasts=1, minN_2_fit=20):
 
 
 if __name__ == '__main__':
-    datanum, modelnums = 1, [0]
+    datanum, modelnums = 1, [0,1,2,3]
     submit_jobs(datanum, modelnums)
