@@ -19,7 +19,7 @@ class saveRVmodelCV:
 
 
 class saveRVmodelCV_qsub:
-    def __init__(self, time_sec, success, theta0, theta, ll, Ntrain, outsuffix):
+    def __init__(self, time_sec, success, theta0, theta, ll, Ntrain, samples, outsuffix):
 	self.time_sec = time_sec
         self.success = success
         self.ll = ll
@@ -27,6 +27,7 @@ class saveRVmodelCV_qsub:
         self.theta0, self.theta = theta0, theta
         self.thetalabels = self.thetalabels[:self.theta0.size]
 	self.Ntrain = Ntrain
+	self.samples = samples
 
         # pickle
 	self.outsuffix = outsuffix

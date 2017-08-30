@@ -190,29 +190,29 @@ def C_prior(C):
     return 1./(2*Cmax) if abs(C) <= Cmax else 0.
 
 
-'''def compute_theta_prior(theta):
+def compute_theta_prior(theta):
     theta = np.ascontiguousarray(theta)
     if theta.size == 2:
         sigmaJ,C = theta
         return jitter_prior(sigmaJ) * C_prior(C)
 
     elif theta.size == 7:
-        sigmaJ,C,P1,T01,K1,e1,omega1 = theta
-        return jitter_prior(sigmaJ) * C_prior(C) * P_prior(P1) * K_prior(K1) * e_prior() * omega_prior() * M_prior()
+        sigmaJ,C,P1,M1,K1,e1,omega1 = theta
+        return jitter_prior(sigmaJ) * C_prior(C) * P_prior(P1) * K_prior(K1) * e_prior(e1) * omega_prior() * M_prior()
 
     elif theta.size == 12:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2 = theta
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2 = theta
         return jitter_prior(sigmaJ) * C_prior(C) * P_prior(P1) * P_prior(P2) * K_prior(K1) * K_prior(K2) * \
-               e_prior()**2 * omega_prior()**2 * M_prior()**2
+               e_prior(e1) * e_prior(e2) * omega_prior()**2 * M_prior()**2
 
     elif theta.size == 17:
-        sigmaJ,C,P1,T01,K1,e1,omega1,P2,T02,K2,e2,omega2,P3,T03,K3,e3,omega3 = theta
+        sigmaJ,C,P1,M1,K1,e1,omega1,P2,M2,K2,e2,omega2,P3,M3,K3,e3,omega3 = theta
         return jitter_prior(sigmaJ) * C_prior(C) * P_prior(P1) * P_prior(P2) * P_prior(P3) * \
                K_prior(K1) * K_prior(K2) * K_prior(K3) * \
-               e_prior()**3 * omega_prior()**3 * M_prior()**3
+               e_prior(e1) * e_prior(e2) * e_prior(e3) * omega_prior()**3 * M_prior()**3
 
     else:
-        raise ValueError('Weird number of model parameters.')'''
+        raise ValueError('Weird number of model parameters.')
 
 def planet_prior(Nplanets, alpha=1./3):
     if Nplanets == 0:

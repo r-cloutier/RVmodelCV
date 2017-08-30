@@ -4,7 +4,7 @@ from lnlike import *
 from visualize_data import *
 from savepickle import *
 from priors import *
-
+from run_MCMC import *
 
 def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
                               factr=1e1, Nmax=2e4):
@@ -19,7 +19,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     # Setup
     t0 = time.time()
     folder = 'RVdata%.4d'%datanum
-    outsuffix = 'qsubtest_modelnum%i_Ntrain%i_nforecasts%i_minN2fit%i'%(modelnum, 
+    outsuffix = 'qsubtest_modelnum%i_Ntrain%.3d_nforecasts%i_minN2fit%i'%(modelnum, 
 									ind, 
 									nforecasts, 
 									minN_2_fit)
@@ -40,21 +40,21 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     bnds = get_bounds(datanum, modelnum)
     
     # Optimize keplerian parameters
-    args = (ttrain, rvtrain, ervtrain)
-    theta_real,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta0_real, args=args,
-                                   approx_grad=True, factr=factr, bounds=bnds,
-                                   maxiter=int(Nmax), maxfun=int(Nmax))
-    success = True if d['warnflag'] == 0 else False
-    print theta0_real,  theta_real
-	    
-    # Compute priors on model parameters
-    #lnpri = np.log(compute_theta_prior(thetaopt))
-
+    #args = (ttrain, rvtrain, ervtrain)
+    #theta_real,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta0_real, args=args,
+    #                               approx_grad=True, factr=factr, bounds=bnds,
+    #                               maxiter=int(Nmax), maxfun=int(Nmax))
+    #success = True if d['warnflag'] == 0 else False
+    sampler, samples, _, results = run_emcee(theta0_real, ttrain, 
+					     rvtrain, ervtrain)
+    success = True
+    theta_real = results[:,0]
+ 
     # Compute prior on the number of planets
     lnmodelpri = np.log(compute_planet_prior(theta_real))
 
     # Compute lnlikelihood for this training set
-    ll = lnlike(theta_real, ttest, rvtest, ervtest) + lnmodelpri
+    ll = lnlike(theta_real, ttest, rvtest, ervtest)# + lnmodelpri
 
     # Save results
     try:
@@ -66,7 +66,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     except OSError:
 	pass
     self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, ll, ttrain.size,
-                              'results/%s/%s'%(folder, outsuffix))
+                              samples, 'results/%s/%s'%(folder, outsuffix))
 
 
 def MAD(arr):
