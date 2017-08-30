@@ -159,7 +159,10 @@ def recondition_theta(theta_scaled):
 def P_prior(P):
     _,_,Plims,_,_,_,_ = _param_conditions()
     Pmin, Pmax = float(Plims[0]), float(Plims[1])
-    return 1. / (P*np.log(Pmax/Pmin))
+    if P < 0:
+	return 1. / (P*np.log(Pmax/Pmin))
+    else:
+	return 0.
 
 def K_prior(K, K0=1):
     _,_,_,_,Klims,_,_ = _param_conditions()
