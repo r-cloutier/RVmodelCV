@@ -29,9 +29,6 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     sort = np.argsort(t)
     t, rv, erv = t[sort], rv[sort], erv[sort]
 
-    # Define the sizes of the training sets
-    T = np.arange(int(minN_2_fit), t.size-int(nforecasts))
-
     # Split: create training set and a testing point
     ttrain, rvtrain, ervtrain = t[:ind], rv[:ind], erv[:ind]
     ttest, rvtest, ervtest  = np.ascontiguousarray(t[ind+nforecasts-1]), \
@@ -48,6 +45,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
                                    approx_grad=True, factr=factr, bounds=bnds,
                                    maxiter=int(Nmax), maxfun=int(Nmax))
     success = True if d['warnflag'] == 0 else False
+    print theta0_real,  theta_real
 	    
     # Compute priors on model parameters
     #lnpri = np.log(compute_theta_prior(thetaopt))
@@ -67,8 +65,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
 	os.mkdir('results/%s'%folder)
     except OSError:
 	pass
-    print 'saving...'
-    self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, ll,
+    self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, ll, ttrain.size,
                               'results/%s/%s'%(folder, outsuffix))
 
 

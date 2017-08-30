@@ -23,7 +23,10 @@ def compute_modelposterior_CV(theta_real, t, rv, erv, bnds, minN_2_fit=20,
     # Define the sizes of the training sets
     nforecasts = 1    # number of steps from last in training set
     T = np.arange(minN_2_fit, t.size-nforecasts)
-    
+   
+    # Compute prior on the number of planets
+    lnmodelpri = np.log(compute_planet_prior(theta_real))
+
     # Loop over each training set and each number of forecast steps
     lnlikes, successes = np.zeros(0), np.zeros(0, dtype=bool)
     k, theta0s_real, thetaops_real = 0, np.zeros((0,len(theta_real))), \
@@ -48,7 +51,8 @@ def compute_modelposterior_CV(theta_real, t, rv, erv, bnds, minN_2_fit=20,
             thetaopt_real,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta_real, args=args,
                                               approx_grad=True, factr=factr, bounds=bnds,
                                               maxiter=int(Nmax), maxfun=int(Nmax))
-            s = True if d['warnflag'] == 0 else False
+            
+	    s = True if d['warnflag'] == 0 else False
 	    successes = np.append(successes, s)
 
 	    # Save parameter values
@@ -58,17 +62,12 @@ def compute_modelposterior_CV(theta_real, t, rv, erv, bnds, minN_2_fit=20,
             # Compute priors on model parameters
             #lnpri = np.log(compute_theta_prior(thetaopt))
 
-            # Compute prior on the number of planets
-            lnmodelpri = np.log(compute_planet_prior(thetaopt_real))
-
             # Compute lnlikelihood for this training set
-            lnlikes = np.append(lnlikes, lnlike(thetaopt_real, ttest, rvtest, ervtest) + \
-                                lnmodelpri)
+            lnlikes = np.append(lnlikes, lnlike(thetaopt_real, ttest, rvtest, ervtest))
             
     # Return mean lnlikelihood and std of the mean
-    g = successes
-    mad_median = MAD(lnlikes[g]) / np.sqrt(lnlikes[g].size)
-    return lnlikes, successes, theta0s_real, thetaops_real, np.median(lnlikes[g]), mad_median
+    mad_median = MAD(lnlikes[successes]) / np.sqrt(lnlikes[successes].size)
+    return lnlikes, successes, theta0s_real, thetaops_real, np.median(lnlikes[successes]), mad_median
 
 
 def MAD(arr):
