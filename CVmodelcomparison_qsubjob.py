@@ -37,7 +37,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
 
     # Get initial parameter guesses and bnds
     theta0_real = get_initializations(datanum, modelnum)
-    bnds = get_bounds(datanum, modelnum)
+    #bnds = get_bounds(datanum, modelnum)
     
     # Optimize keplerian parameters
     #args = (ttrain, rvtrain, ervtrain)

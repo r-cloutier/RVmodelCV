@@ -54,6 +54,12 @@ class SaveQsubResults:
 	    self.lnlikes = np.append(self.lnlikes, d.ll)
 	    k += 1
 
+	# pickle
+        self.outsuffix = 'results/RVdata%.4d/qsub_datanum%i_modelnum%i'%(datanum, datanum, modelnum)
+        f = open('%s'%self.outsuffix, 'wb')
+        pickle.dump(self, f)
+        f.close()
+
 
 def loadpickle(fname):
     f = open(fname, 'rb')
