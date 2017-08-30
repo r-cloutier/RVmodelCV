@@ -35,9 +35,10 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
                               np.ascontiguousarray(rv[ind+nforecasts-1]), \
                               np.ascontiguousarray(erv[ind+nforecasts-1])
 
-    # Get initial parameter guesses and bnds
+    # Get initial parameter guesses, bnds, and initial gaussian balls
     theta0_real = get_initializations(datanum, modelnum)
     #bnds = get_bounds(datanum, modelnum)
+    initialize = get_gaussianballs(datanum, modelnum)
     
     # Optimize keplerian parameters
     #args = (ttrain, rvtrain, ervtrain)
@@ -46,7 +47,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     #                               maxiter=int(Nmax), maxfun=int(Nmax))
     #success = True if d['warnflag'] == 0 else False
     sampler, samples, _, results = run_emcee(theta0_real, ttrain, 
-					     rvtrain, ervtrain)
+					     rvtrain, ervtrain, initialize)
     success = True
     theta_real = results[:,0]
  

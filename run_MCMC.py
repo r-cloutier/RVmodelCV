@@ -37,16 +37,16 @@ def lnprob(theta_real, t, rv, erv):
     
 def get_initialization(theta):
     #sigmaJ,C,P1,M1,K1,e1,omega1,... = theta
-    initialize = np.append([.1,1], np.tile([1,1,1,1e-2,1],3))
+    initialize = np.append([.1,.1], np.tile([1,1,1,1e-2,1],3))
     initialize[12] = 10.
     return initialize[:len(theta)]
 
-    
-def run_emcee(theta_real, t, rv, erv, a=2,
-              nwalkers=100, burnin=200, nsteps=200):
+
+def run_emcee(theta_real, t, rv, erv, initialize,
+              a=2, nwalkers=100, burnin=200, nsteps=200):
     # Initialize walkers in the parameter space
-    ndim = len(theta_real)
-    initialize, p0 = get_initialization(theta_real), []
+    ndim, p0 = len(theta_real), []
+    #initialize = get_initialization(theta_real)
     for i in range(nwalkers):
         p0.append(theta_real + initialize*np.random.randn(ndim))
 

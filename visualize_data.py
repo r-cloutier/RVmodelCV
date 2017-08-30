@@ -19,6 +19,16 @@ def get_initializations(num, nplanets):
     return theta_real[:2+int(nplanets)*5]
 
 
+def get_gaussianballs(num, nplanets):
+    assert 1 <= num <= 6
+    assert 0 <= nplanets <= 3
+    f = open('setup/gaussianballs_%.4d.dat'%num,'r')
+    g = f.readlines()
+    f.close()
+    theta_real = np.ascontiguousarray(g).astype('float')
+    return theta_real[:2+int(nplanets)*5]
+
+
 def get_bounds(num, nplanets):
     assert 1 <= num <= 6
     assert 0 <= nplanets <= 3
