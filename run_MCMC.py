@@ -49,7 +49,7 @@ def get_initialization(theta):
 
 
 def run_emcee(theta_real, t, rv, erv, initialize,
-              a=2, nwalkers=100, burnin=200, nsteps=200):
+              a=1.9, nwalkers=100, burnin=400, nsteps=400):
     # Initialize walkers in the parameter space
     ndim, p0 = len(theta_real), []
     #initialize = get_initialization(theta_real)
