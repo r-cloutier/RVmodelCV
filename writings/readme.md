@@ -3,5 +3,8 @@
 * Conversely to most (all?) other submitted techniques, cross-validation (CV) is not used to estimate the marginalized likelihood, instead it is used to estimate the predictive power of each model on previously unseen RV data
 
 
+## Leave-one-out CV
+* The RV dataset of $N$ is split into 
+
 ## Time-Series Cross-Validation:
-* tp
+* 
