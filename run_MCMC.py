@@ -9,15 +9,21 @@ from scipy.ndimage.filters import gaussian_filter1d
 def get_results_kernel(samples, sigma=10, pltt=True):
     nparams = samples.shape[1]
     results = np.zeros((nparams, 4))
+    Ps_Ks = [2,4,7,9,12,14]
     for i in range(nparams):
-        kernel = gaussian_kde(samples[:,i])
-        xarr = np.linspace(samples[:,i].min(), samples[:,i].max(), 500)
+	# take log for periods and semiamplitudes
+	s = np.log(samples[:,i]) if i in Ps_Ks else samples[:,i]
+        kernel = gaussian_kde(s)
+        xarr = np.linspace(s.min(), s.max(), 500)
         probs = kernel.pdf(xarr) / kernel.pdf(xarr).sum()
         probs = gaussian_filter1d(probs, sigma)
         MAP = float(xarr[probs==probs.max()])
-        v = np.percentile(samples[:,i], (16,84))
+        v = np.percentile(s, (16,84))
         p1sig, m1sig = v[1]-MAP, MAP-v[0]
-        results[i] = [MAP, p1sig, m1sig, np.mean([m1sig,p1sig])]
+	if i not in Ps_Ks:
+            results[i] = [MAP, p1sig, m1sig, np.mean([m1sig,p1sig])]
+	else:
+	    results[i] = [np.exp(MAP), np.exp(p1sig), np.exp(m1sig), np.mean(np.exp([m1sig,p1sig]))]
         if pltt:
             plt.plot(xarr, probs, 'k-')
             plt.axvline(MAP, ls='--')

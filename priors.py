@@ -170,7 +170,7 @@ def e_prior(e, sigma_e=.2):
     e = float(e)
     PDF_Rayleigh = e/sigma_e**2 * np.exp(-.5*(e/sigma_e)**2)
     CDF_Rayleigh = 1. - np.exp(-.5*(e/sigma_e)**2)
-    return PDF_Rayleigh / CDF_Rayleigh if 0 <= e <= 1 else 0
+    return PDF_Rayleigh / CDF_Rayleigh if 0 <= e < 1 else 0
         
 def omega_prior():
     return 1. / (2*np.pi)
