@@ -14,4 +14,7 @@
 * Leave-one-out CV is applicable when measurements in the input dataset, which need not be a time-series, are uncorrelated. This is certainly not the case in an RV time-series whose adjacent points are highly correlated due to the presence of a periodic planetary signals and/or correlated noise arising from stellar activity
 * When dealing with time-series, the removal of a single measurement does not remove all the information content associated with that dataum due to correlations within the data
 * As such we modify our method of train/test splitting of the data according to https://projecteuclid.org/euclid.ssu/1268143839 as described below
-  * y_1
+  * Given the full RV dataset of N measurements y_1,...,y_N, construct a training set of n0 measurements y_1,...,y_n0, where n0 < N is the smallest number of measurements required to optimize each models' parameters.
+  * For this n=n0, optimize each models' parameters on the training set y_1,...,y_n0 and compute the lnlikelihood of the testing set y_(n0+1) for each model. In this way no future observations are used for training
+  * Repeat the above steps of splitting, optimizing, and computing the lnlikelihood for n = n0,...,N-1
+  * In this example the forecast is a singular value of one since the testing set is the next chronological measurement following the last measurement in the training sample. Although, in principal, multiple forecast values could be used
