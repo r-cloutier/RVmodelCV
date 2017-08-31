@@ -6,6 +6,7 @@ from savepickle import *
 from priors import *
 from run_MCMC import *
 
+
 def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
                               factr=1e1, Nmax=2e4):
     '''
@@ -49,6 +50,10 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     sampler, samples, _, results = run_emcee(theta0_real, ttrain, 
 					     rvtrain, ervtrain, initialize)
     success = True
+
+    # Find best M (or T0) based on the best-fit P
+    if modelnum > 0:
+        results = find_optimum_M(results, ttrain, rvtrain, ervtrain)
     theta_real = results[:,0]
  
     # Compute prior on the number of planets
@@ -72,6 +77,42 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
 
 def MAD(arr):
     return np.median(abs(arr - np.median(arr)))
+
+
+def find_optimum_M(results, ttrain, rvtrain, ervtrain):
+    results_new = results + 0
+    Ms = np.linspace(0, 2*np.pi, 100)
+    
+    if results.shape[0] == 7:
+        lls = np.zeros(Ms.size)
+        for i in range(Ms.size):
+            results_new[3,0] = Ms[i]
+            lls[i] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
+        results_new[3,0] = float(Ms[lls == lls.max()])
+
+    elif results.shape[0] == 12:
+        lls = np.zeros((Ms.size, Ms.size))
+        for i in range(Ms.size):
+            for j in range(Ms.size):
+                results_new[3,0], results_new[8,0] = Ms[i], Ms[j]
+                lls[i,j] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
+        ind, jind = np.where(lls == lls.max())
+        results_new[3,0], results_new[8,0] = float(Ms[ind[0]]), float(Ms[jind[0]])
+
+    elif results.shape[0] == 17:
+        lls = np.zeros((Ms.size, Ms.size, Ms.size))
+        for i in range(Ms.size):
+            for j in range(Ms.size):
+                for k in range(Ms.size):
+                    results_new[3,0], results_new[8,0], results_new[13,0] = Ms[i], Ms[j], Ms[k]
+                    lls[i,j,k] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
+        ind, jind, kind = np.where(lls == lls.max())
+        results_new[3,0], results_new[8,0], results_new[13,0] = float(Ms[ind[0]]), float(Ms[jind[0]]), float(Ms[kind[0]])
+
+    else:
+        raise ValueError('Weird number of model parameters.')
+    
+    return results_new
 
 
 def preferred_model(models, lls, ells):
