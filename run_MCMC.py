@@ -13,7 +13,8 @@ def get_results_kernel(samples, sigma=10, pltt=True):
     for i in range(nparams):
 	# take log for periods and semiamplitudes
 	s = np.log(samples[:,i]) if i in Ps_Ks else samples[:,i]
-        kernel = gaussian_kde(s)
+        s = s[np.isfinite(s)]
+	kernel = gaussian_kde(s)
         xarr = np.linspace(s.min(), s.max(), 500)
         probs = kernel.pdf(xarr) / kernel.pdf(xarr).sum()
         probs = gaussian_filter1d(probs, sigma)
