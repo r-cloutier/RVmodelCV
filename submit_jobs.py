@@ -35,11 +35,23 @@ def submit_jobs(datanum, modelnums=[0,1,2,3], nforecasts=1, minN_2_fit=20):
                 h = open('jobscript', 'w')
                 h.write(g)
                 h.close()
-                
-                os.system('qsub jobscript')
-                os.system('rm jobscript')
-		#os.system('cat jobscript')
 
+                # Run job if not already
+                if run_this_job(datanum, m, int(T[j]), nforecasts, minN_2_fit):
+                    os.system('qsub jobscript')
+                
+		os.system('rm jobscript')
+                #os.system('cat jobscript')
+
+
+def run_this_job(datanum, modelnum, ind, nforecasts, minN_2_fit):
+    folder = 'RVdata%.4d'%datanum
+    outsuffix = 'qsubtest_modelnum%i_Ntrain%.3d_nforecasts%i_minN2fit%i'%(modelnum,
+                                                                          ind,
+                                                                          nforecasts,
+                                                                          minN_2_fit)
+    return not os.path.isfile('results/%s/%s'%(folder, outsuffix))
+                
 
 if __name__ == '__main__':
     datanum, modelnums = 1, [0,1,2,3]
