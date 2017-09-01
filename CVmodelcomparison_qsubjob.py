@@ -55,7 +55,10 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     if modelnum > 0:
         results = find_optimum_M(results, ttrain, rvtrain, ervtrain)
     theta_real = results[:,0]
- 
+
+    # Get median parameter values
+    theta_median = np.median(self.samples, axis=0)
+    
     # Compute prior on the number of planets
     lnmodelpri = np.log(compute_planet_prior(theta_real))
 
@@ -71,8 +74,9 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
 	os.mkdir('results/%s'%folder)
     except OSError:
 	pass
-    self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, initialize, 
-			      ll, ttrain.size, samples, 'results/%s/%s'%(folder, outsuffix))
+    self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, theta_median,
+                              initialize, ll, ttrain.size, samples,
+                              'results/%s/%s'%(folder, outsuffix))
 
 
 def MAD(arr):
