@@ -62,11 +62,12 @@ def get_summed_lnlikes(datanum):
 
 
 def plot_total_lnlikes(datanum):
-    modelnums, total_ll = get_summed_results(datanum)
+    modelnums, total_ll = get_summed_lnlikes(datanum)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.errorbar(modelnums, total_ll, fmt='k.', capsize=0)
     ax.set_xlabel('Model Number'), ax.set_title('RVdata%.4d'%datanum)
+    self = loadpickle('results/RVdata%.4d/qsub_datanum%i_modelnum0'%(datanum,datanum))
     ax.set_ylabel('Total ln likelihood for %i measurements'%self.npickles)
     ax.set_xlim((-.5,3.5))
     plt.show()
