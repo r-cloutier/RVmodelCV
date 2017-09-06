@@ -22,16 +22,16 @@ def get_median_results(datanum):
 
     # Sort by model number
     sort = np.argsort(modelnums)
-    modelnums, medians, mads = modelnums[sort], medians[sort], mads[sort]
-
-    return modelnums, medians, mads
+    return modelnums[sort], medians[sort], mads[sort]
 
 
 def plot_medians(datanum):
     modelnums, medians, mads = get_median_results(datanum)
     fig = plt.figure()
+    ax = fig.add_subplot(111)
     ax.errorbar(modelnums, medians, mads, fmt='k.', capsize=0)
     ax.set_xlabel('Model Number'), ax.set_title('RVdata%.4d'%datanum)
     ax.set_ylabel('Median ln likelihood per measurement')
+    ax.set_xlim((-.5,3.5))
     plt.show()
     plt.close('all')
