@@ -12,3 +12,4 @@ from PyAstronomy.pyasl import foldAt
 import glob
 import time
 import rvmodel as rvm
+from astropy.stats import LombScargle
