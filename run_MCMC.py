@@ -37,7 +37,7 @@ def get_results_kernel(samples, sigma=10, pltt=True):
 def lnprob(theta_real, t, rv, erv):
     lp = np.log(compute_theta_prior(theta_real))
     if np.isfinite(lp):
-        return lnlike(theta_real, t, rv, erv)
+        return lnlike(theta_real, t, rv, erv) + lp
     else:
         return -np.inf
 
