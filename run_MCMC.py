@@ -1,6 +1,6 @@
 from imports import *
 from visualize_data import *
-from priors import compute_theta_prior
+from priors import compute_theta_prior, compute_theta_prior_custom
 from lnlike import lnlike
 from scipy.stats import gaussian_kde
 from scipy.ndimage.filters import gaussian_filter1d
@@ -34,8 +34,10 @@ def get_results_kernel(samples, sigma=10, pltt=True):
     return results
 
 
-def lnprob(theta_real, t, rv, erv):
-    lp = np.log(compute_theta_prior(theta_real))
+def lnprob(theta_real, t, rv, erv, Plims):
+    #lp = np.log(compute_theta_prior(theta_real))
+    P1min, P1max, P2min, P2max, P3min, P3max = Plims
+    lp = np.log(compute_theta_prior_custom(theta_real, P1min, P1max, P2min, P2max, P3min, P3max))
     if np.isfinite(lp):
         return lnlike(theta_real, t, rv, erv) + lp
     else:
@@ -49,7 +51,7 @@ def get_initialization(theta):
     return initialize[:len(theta)]
 
 
-def run_emcee(theta_real, t, rv, erv, initialize,
+def run_emcee(theta_real, t, rv, erv, initialize, Plims=[]
               a=1.9, nwalkers=100, burnin=400, nsteps=400):
     # Initialize walkers in the parameter space
     ndim, p0 = len(theta_real), []
@@ -58,7 +60,8 @@ def run_emcee(theta_real, t, rv, erv, initialize,
         p0.append(theta_real + initialize*np.random.randn(ndim))
 
     # Initialize sampler
-    args = (t, rv, erv)
+    Plims = Plims if len(list(Plims)) > 0 else (1.25,1e4)*3
+    args = (t, rv, erv, Plims)
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=args, a=a)
 
     print '\nRunning Burnin...'
