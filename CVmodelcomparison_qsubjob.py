@@ -40,7 +40,10 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     theta0_real = get_initializations(datanum, modelnum)
     #bnds = get_bounds(datanum, modelnum)
     initialize = get_gaussianballs(datanum, modelnum)
-    
+   
+    # Get period limits
+    Plims = get_Plims(datanum)
+ 
     # Optimize keplerian parameters
     #args = (ttrain, rvtrain, ervtrain)
     #theta_real,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta0_real, args=args,
@@ -48,7 +51,8 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     #                               maxiter=int(Nmax), maxfun=int(Nmax))
     #success = True if d['warnflag'] == 0 else False
     sampler, samples, _, results = run_emcee(theta0_real, ttrain, 
-					     rvtrain, ervtrain, initialize)
+					     rvtrain, ervtrain, initialize, 
+					     Plims=Plims)
     success = True
 
     # Find best M (or T0) based on the best-fit P
@@ -77,6 +81,11 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, theta_median,
                               initialize, ll, ttrain.size, samples,
                               'results/%s/%s'%(folder, outsuffix))
+
+
+def get_Plims(datanum):
+    Pmins,Pmaxs = np.loadtxt('setup/prior_bounds_%.4d.txt'%datanum, delimiter=',', usecols=(2,3)).T
+    return Pmins[0], Pmaxs[0], Pmins[1], Pmaxs[1], Pmins[2], Pmaxs[2]
 
 
 def MAD(arr):
