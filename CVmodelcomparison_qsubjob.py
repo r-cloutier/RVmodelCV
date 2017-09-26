@@ -61,7 +61,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     theta_real = results[:,0]
 
     # Get median parameter values
-    theta_median = np.median(self.samples, axis=0)
+    theta_median = np.median(samples, axis=0)
     
     # Compute prior on the number of planets
     lnmodelpri = np.log(compute_planet_prior(theta_real))
@@ -78,7 +78,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
 	os.mkdir('results/%s'%folder)
     except OSError:
 	pass
-    self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real, theta_median,
+    self = saveRVmodelCV_qsub(time.time()-t0, success, theta0_real, theta_real,
                               initialize, ll, ttrain.size, samples,
                               'results/%s/%s'%(folder, outsuffix))
 
@@ -101,7 +101,8 @@ def find_optimum_M(results, ttrain, rvtrain, ervtrain):
         for i in range(Ms.size):
             results_new[3,0] = Ms[i]
             lls[i] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
-        results_new[3,0] = float(Ms[lls == lls.max()])
+	if np.isfinite(lls[i]):
+            results_new[3,0] = float(Ms[lls == lls.max()])
 
     elif results.shape[0] == 12:
         lls = np.zeros((Ms.size, Ms.size))
@@ -109,8 +110,9 @@ def find_optimum_M(results, ttrain, rvtrain, ervtrain):
             for j in range(Ms.size):
                 results_new[3,0], results_new[8,0] = Ms[i], Ms[j]
                 lls[i,j] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
-        ind, jind = np.where(lls == lls.max())
-        results_new[3,0], results_new[8,0] = float(Ms[ind[0]]), float(Ms[jind[0]])
+	if np.isfinite(lls[i,j]):
+            ind, jind = np.where(lls == lls.max())
+            results_new[3,0], results_new[8,0] = float(Ms[ind[0]]), float(Ms[jind[0]])
 
     elif results.shape[0] == 17:
         lls = np.zeros((Ms.size, Ms.size, Ms.size))
@@ -119,8 +121,9 @@ def find_optimum_M(results, ttrain, rvtrain, ervtrain):
                 for k in range(Ms.size):
                     results_new[3,0], results_new[8,0], results_new[13,0] = Ms[i], Ms[j], Ms[k]
                     lls[i,j,k] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
-        ind, jind, kind = np.where(lls == lls.max())
-        results_new[3,0], results_new[8,0], results_new[13,0] = float(Ms[ind[0]]), float(Ms[jind[0]]), float(Ms[kind[0]])
+	if np.isfinite(lls[i,j,k]):
+            ind, jind, kind = np.where(lls == lls.max())
+            results_new[3,0], results_new[8,0], results_new[13,0] = float(Ms[ind[0]]), float(Ms[jind[0]]), float(Ms[kind[0]])
 
     else:
         raise ValueError('Weird number of model parameters.')

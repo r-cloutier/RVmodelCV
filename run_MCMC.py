@@ -51,7 +51,7 @@ def get_initialization(theta):
     return initialize[:len(theta)]
 
 
-def run_emcee(theta_real, t, rv, erv, initialize, Plims=[]
+def run_emcee(theta_real, t, rv, erv, initialize, Plims=[],
               a=1.9, nwalkers=100, burnin=400, nsteps=400):
     # Initialize walkers in the parameter space
     ndim, p0 = len(theta_real), []
