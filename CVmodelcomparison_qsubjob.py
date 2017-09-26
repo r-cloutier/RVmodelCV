@@ -101,7 +101,7 @@ def find_optimum_M(results, ttrain, rvtrain, ervtrain):
         for i in range(Ms.size):
             results_new[3,0] = Ms[i]
             lls[i] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
-	if np.isfinite(lls[i]):
+	if np.any(np.isfinite(lls[i])):
             results_new[3,0] = float(Ms[lls == lls.max()])
 
     elif results.shape[0] == 12:
@@ -110,7 +110,7 @@ def find_optimum_M(results, ttrain, rvtrain, ervtrain):
             for j in range(Ms.size):
                 results_new[3,0], results_new[8,0] = Ms[i], Ms[j]
                 lls[i,j] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
-	if np.isfinite(lls[i,j]):
+	if np.any(np.isfinite(lls[i,j])):
             ind, jind = np.where(lls == lls.max())
             results_new[3,0], results_new[8,0] = float(Ms[ind[0]]), float(Ms[jind[0]])
 
@@ -121,7 +121,7 @@ def find_optimum_M(results, ttrain, rvtrain, ervtrain):
                 for k in range(Ms.size):
                     results_new[3,0], results_new[8,0], results_new[13,0] = Ms[i], Ms[j], Ms[k]
                     lls[i,j,k] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
-	if np.isfinite(lls[i,j,k]):
+	if np.any(np.isfinite(lls[i,j,k])):
             ind, jind, kind = np.where(lls == lls.max())
             results_new[3,0], results_new[8,0], results_new[13,0] = float(Ms[ind[0]]), float(Ms[jind[0]]), float(Ms[kind[0]])
 
