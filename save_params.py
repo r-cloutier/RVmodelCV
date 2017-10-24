@@ -58,7 +58,7 @@ def save_params(datanum, modelnum):
             
         g += '\n'
 
-    h = open('Cloutier/TimeSeriesCV/params_%i_%.4d.txt'%(modelnum, datanum),'w')
+    h = open('Cloutier/TimeSeriesCV/params_%i_%.4db.txt'%(modelnum, datanum),'w')
     h.write(g)
     h.close()
 
@@ -79,7 +79,7 @@ def save_evidences(datanum):
         lls[i], ells[i] = np.median(self.lnlikes), \
                           MAD(self.lnlikes) / np.sqrt(self.lnlikes.size)
 
-    fname = 'Cloutier/TimeSeriesCV/evidences_%.4d.txt'%datanum
+    fname = 'Cloutier/TimeSeriesCV/evidences_%.4db.txt'%datanum
     h = open(fname,'w')
     h.write(g)
     h.close()
