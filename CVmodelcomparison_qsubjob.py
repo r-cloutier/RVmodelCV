@@ -34,7 +34,9 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     if minN_2_fit == 1:
         tokeep = np.delete(np.arange(t.size), ind)
         ttrain, rvtrain, ervtrain = t[tokeep], rv[tokeep], erv[tokeep]
-        ttest, rvtest, ervtest = t[ind], rv[ind], erv[ind]
+        ttest, rvtest, ervtest = np.ascontiguousarray(t[ind]), \
+				 np.ascontiguousarray(rv[ind]), \
+				 np.ascontiguousarray(erv[ind])
     else:
     	ttrain, rvtrain, ervtrain = t[:ind], rv[:ind], erv[:ind]
     	ttest, rvtest, ervtest  = np.ascontiguousarray(t[ind+nforecasts-1]), \
