@@ -96,10 +96,13 @@ def get_oddsratio_file(datanum, iteration):
     median_ratio, sigma_ratio = np.zeros(3), np.zeros(3)
     for i in range(3):
         numerator[i], denominator[i] = i+1, i
-        log10_oddsratio = unp.log10(unp.exp(lls[i+1]-lls[i]))    
+        try:
+	    log10_oddsratio = unp.log10(unp.exp(lls[i+1]-lls[i]))
+	except ValueError:
+	    log10_oddsratio = unp.uarray(-np.inf, np.nan)
         median_ratio[i], sigma_ratio[i] = unp.nominal_values(log10_oddsratio), \
                                           unp.std_devs(log10_oddsratio)
-                                          
+ 
     # create odds ratio files
     f = open('Cloutier/TimeSeriesCV/oddsratio_%.4d%s.txt'%(datanum, iteration),
              'w')
@@ -111,5 +114,6 @@ def get_oddsratio_file(datanum, iteration):
                                                             median_ratio[i],
                                                             sigma_ratio[i],
                                                             sigma_ratio[i])
+    g = g.replace('nan','NaN')
     f.write(g)
     f.close()

@@ -20,7 +20,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     # Setup
     t0 = time.time()
     folder = 'RVdata%.4d'%datanum
-    outsuffix = 'qsubtest_modelnum%i_Ntrain%.3d_nforecasts%i_minN2fit%i'%(modelnum, 
+    outsuffix = 'qsubtest_modelnum%i_Ntrain%.3d_nforecasts%i_minN2fit%i'%(modelnum,
 									ind, 
 									nforecasts, 
 									minN_2_fit)
@@ -31,10 +31,15 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     t, rv, erv = t[sort], rv[sort], erv[sort]
 
     # Split: create training set and a testing point
-    ttrain, rvtrain, ervtrain = t[:ind], rv[:ind], erv[:ind]
-    ttest, rvtest, ervtest  = np.ascontiguousarray(t[ind+nforecasts-1]), \
-                              np.ascontiguousarray(rv[ind+nforecasts-1]), \
-                              np.ascontiguousarray(erv[ind+nforecasts-1])
+    if minN_2_fit == 1:
+        tokeep = np.delete(np.arange(t.size), ind)
+        ttrain, rvtrain, ervtrain = t[tokeep], rv[tokeep], erv[tokeep]
+        ttest, rvtest, ervtest = t[ind], rv[ind], erv[ind]
+    else:
+    	ttrain, rvtrain, ervtrain = t[:ind], rv[:ind], erv[:ind]
+    	ttest, rvtest, ervtest  = np.ascontiguousarray(t[ind+nforecasts-1]), \
+                              	  np.ascontiguousarray(rv[ind+nforecasts-1]), \
+                              	  np.ascontiguousarray(erv[ind+nforecasts-1])
 
     # Get initial parameter guesses, bnds, and initial gaussian balls
     theta0_real = get_initializations(datanum, modelnum)
@@ -45,11 +50,6 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     Plims = get_Plims(datanum)
  
     # Optimize keplerian parameters
-    #args = (ttrain, rvtrain, ervtrain)
-    #theta_real,_,d = fmin_l_bfgs_b(neg_lnlike, x0=theta0_real, args=args,
-    #                               approx_grad=True, factr=factr, bounds=bnds,
-    #                               maxiter=int(Nmax), maxfun=int(Nmax))
-    #success = True if d['warnflag'] == 0 else False
     sampler, samples, _, results = run_emcee(theta0_real, ttrain, 
 					     rvtrain, ervtrain, initialize, 
 					     Plims=Plims)
@@ -67,7 +67,7 @@ def compute_modelposterior_CV(datanum, modelnum, ind, nforecasts, minN_2_fit,
     lnmodelpri = np.log(compute_planet_prior(theta_real))
 
     # Compute lnlikelihood for this training set
-    ll = lnlike(theta_real, ttest, rvtest, ervtest)# + lnmodelpri
+    ll = lnlike(theta_real, ttest, rvtest, ervtest)
 
     # Save results
     try:
@@ -123,7 +123,8 @@ def find_optimum_M(results, ttrain, rvtrain, ervtrain):
                     lls[i,j,k] = lnlike(results_new[:,0], ttrain, rvtrain, ervtrain)
 	if np.any(np.isfinite(lls[i,j,k])):
             ind, jind, kind = np.where(lls == lls.max())
-            results_new[3,0], results_new[8,0], results_new[13,0] = float(Ms[ind[0]]), float(Ms[jind[0]]), float(Ms[kind[0]])
+            results_new[3,0], results_new[8,0], results_new[13,0] = float(Ms[ind[0]]), float(Ms[jind[0]]), \
+                                                                    float(Ms[kind[0]])
 
     else:
         raise ValueError('Weird number of model parameters.')
